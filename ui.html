@@ -1,0 +1,28 @@
+<button id="page-mm">MirrorMult</button>
+<section id="hidden-mm" style="display: none;">
+  <h1>MirrorMult</h1>
+</section>
+
+
+<button id="page-rs">MirrorMult</button>
+<section id="hidden-rs" style="display: none;">
+  <h1>RotSymm</h1>
+</section>
+
+
+<script>
+  const buttonMM = document.getElementById("page-mm");
+  const buttonRS = document.getElementById("page-rs");
+
+  const sectionMM = document.getElementById("hidden-mm");
+  const sectionRS = document.getElementById("hidden-rs");
+
+  buttonMM.addEventListener('click', function() {
+    if (sectionMM.style.display === 'none') {
+      sectionMM.style.display = 'block';
+    }
+    else {
+      sectionMM.style.display = 'none';
+    }
+  })
+</script>
