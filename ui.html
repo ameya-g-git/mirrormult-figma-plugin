@@ -1,15 +1,40 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+
+<!-- HTML -->
 <button id="page-mm">MirrorMult</button>
 <button id="page-rs">RotSymm</button>
 
 <section id="hidden-mm" style="display: block;">
   <h1>MirrorMult</h1>
+  
+  
+  <div id="direction">
+    <h3>Mirror Direction</h3>
+    <input type="radio" id="hori" value="hori" name="mirror-dir">
+    <svg width="12" height="12">
+      <!-- put svg for arrow thing here -->
+    </svg>    
+    <label for="hori">Horizontal</label>
+    
+    <input type="radio" id="vert" value="vert" name="mirror-dir">
+    <svg width="12" height="12">
+      <!-- put svg for arrow thing here -->
+    </svg>    
+    <label for="vert">Vertical</label>
+  </div>
+
+  <div class="mirror-obj">
+    <span>Mirror Object</span>
+    <p>Not selected yet</p> <!-- change with TS mayb --> 
+  </div>
 </section>
 
 <section id="hidden-rs" style="display: none;">
   <h1>RotSymm</h1>
 </section>
 
-
+<!-- JS -->
 <script>
   const buttonMM = document.getElementById("page-mm");
   const buttonRS = document.getElementById("page-rs");
@@ -26,6 +51,4 @@
       sectionRS.style.display = 'block';
       sectionMM.style.display = 'none';
   });
-
-
 </script>
