@@ -2,7 +2,8 @@
   "name": "MirrorMult",
   "id": "1262412898002883307",
   "api": "1.0.0",
-  "main": "code.js",
+  "main": "code.ts",
+  
   "capabilities": [],
   "enableProposedApi": false,
   "editorType": [
