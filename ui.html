@@ -25,8 +25,8 @@
   </div>
 
   <div class="mirror-obj">
-    <span>Mirror Object</span>
-    <p>Not selected yet</p> <!-- change with TS mayb --> 
+    <span >Mirror Object:</span>
+    <p style="display: inline;">Not selected yet</p> <!-- change with TS mayb --> 
   </div>
 </section>
 
@@ -42,6 +42,8 @@
   const sectionMM = document.getElementById("hidden-mm");
   const sectionRS = document.getElementById("hidden-rs");
 
+  const mirrorDir = document.querySelector('input[name:"mirror-dir"]:checked');
+
   buttonMM.addEventListener('click', function() {
       sectionMM.style.display = 'block';
       sectionRS.style.display = 'none';
@@ -51,4 +53,8 @@
       sectionRS.style.display = 'block';
       sectionMM.style.display = 'none';
   });
+
+  if (sectionMM.style.display === 'block') {
+    parent.postMessage({pluginMessage: {mirrorDir}}, '*')
+  }
 </script>
