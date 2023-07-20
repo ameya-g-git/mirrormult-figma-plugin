@@ -10,7 +10,7 @@
   
   <div id="direction">
     <h3>Mirror Direction</h3>
-    <input type="radio" id="hori" value="hori" name="mirror-dir">
+    <input type="radio" id="hori" value="hori" name="mirror-dir" >
     <svg width="12" height="12">
       <!-- put svg for arrow thing here -->
     </svg>    
@@ -52,4 +52,21 @@
       sectionRS.style.display = 'block';
       sectionMM.style.display = 'none';
   });
+
+  window.onmessage = event => {
+      const data = event.data;
+
+      const mirrorObjName = document.querySelector("div.mirror-obj p")
+
+      console.log(data.mirrorObj[0].name);
+      console.log("hi");
+      
+      if (data.selectionRef.length === 1) {
+        mirrorObjName.innerHTML = data.mirrorObj[0].name;
+      }
+      else {
+        mirrorObjName.innerHTML = "Not selected yet!"
+      
+    }
+  }
 </script>
