@@ -36,6 +36,15 @@
 
 <section id="hidden-rs" style="display: none;">
   <h1>RotSymm</h1>
+  
+  <div id="copies">
+    <label for="num-copies">Number of Copies</label>
+    <input type="number" id="num-copies" min="2" step="1" value="2">
+  </div>  
+
+  <div id="origin">
+    
+  </div>
 </section>
 
 <!-- JS -->
@@ -62,17 +71,19 @@
   const sectionMM = document.getElementById("hidden-mm");
   const sectionRS = document.getElementById("hidden-rs");
   
-  buttonMM.addEventListener('click', function() {
+  buttonMM.addEventListener('click', function() { // allows for the MirrorMult button to take user to the MirrorMult Menu, with its specific inputs
         sectionMM.style.display = 'block';
         sectionRS.style.display = 'none';
     });
 
-    buttonRS.addEventListener('click', function() {
+    buttonRS.addEventListener('click', function() { // allows for the RotSymm button to take user to the Rotsymm Menu, with its specific inputs
         sectionRS.style.display = 'block';
         sectionMM.style.display = 'none';
     });
   
   document.getElementById('submit-mm').onclick = () => {
-    const mirrorDir = document.querySelector('input[name="mirrorDir"]:checked').value;
+    const mirrorDir = document.querySelector('input[name="mirrorDir"]:checked').value; // saves either "1" or "2" depending on which radio button is checked, Horizontal or Vertical
+
+    parent.postMessage({mmMessage: mirrorDir}, '*'); // sends the mirror direction for MirrorMult
   }
 </script>
