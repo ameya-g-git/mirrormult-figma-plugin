@@ -10,13 +10,13 @@
   
   <div id="direction">
     <h3>Mirror Direction</h3>
-    <input type="radio" id="hori" value="hori" name="mirror-dir" >
+    <input type="radio" id="hori" value="1" name="mirrorDir">
     <svg width="12" height="12">
       <!-- put svg for arrow thing here -->
     </svg>    
     <label for="hori">Horizontal</label>
     
-    <input type="radio" id="vert" value="vert" name="mirror-dir">
+    <input type="radio" id="vert" value="2" name="mirrorDir">
     <svg width="12" height="12">
       <!-- put svg for arrow thing here -->
     </svg>    
@@ -27,6 +27,11 @@
     <span >Mirror Object:</span>
     <p style="display: inline;">Not selected yet</p> <!-- change with TS mayb --> 
   </div>
+
+  <div class="button">
+    <button id="submit-mm">Mirror Multiple Objects!</button>
+  </div>
+
 </section>
 
 <section id="hidden-rs" style="display: none;">
@@ -35,38 +40,39 @@
 
 <!-- JS -->
 <script>
+  // window.onmessage = event => {
+  //     const data = event.data;
+
+  //     const mirrorObjName = document.querySelector("div.mirror-obj p")
+
+  //     console.log(data.mirrorObj[0].name);
+  //     console.log("hi");
+      
+  //     if (data.mirrorObj.length === 1) {
+  //       mirrorObjName.innerHTML = data.mirrorObj[0].name;
+  //     }
+  //     else {
+  //       mirrorObjName.innerHTML = "Not selected yet!"
+      
+  //   }
+  // }
   const buttonMM = document.getElementById("page-mm");
   const buttonRS = document.getElementById("page-rs");
 
   const sectionMM = document.getElementById("hidden-mm");
   const sectionRS = document.getElementById("hidden-rs");
 
-  const mirrorDir = document.querySelector('input[name="mirror-dir"]:checked').value;
-
   buttonMM.addEventListener('click', function() {
-      sectionMM.style.display = 'block';
-      sectionRS.style.display = 'none';
-  });
+        sectionMM.style.display = 'block';
+        sectionRS.style.display = 'none';
+    });
 
-  buttonRS.addEventListener('click', function() {
-      sectionRS.style.display = 'block';
-      sectionMM.style.display = 'none';
-  });
+    buttonRS.addEventListener('click', function() {
+        sectionRS.style.display = 'block';
+        sectionMM.style.display = 'none';
+    });
 
-  window.onmessage = event => {
-      const data = event.data;
-
-      const mirrorObjName = document.querySelector("div.mirror-obj p")
-
-      console.log(data.mirrorObj[0].name);
-      console.log("hi");
-      
-      if (data.selectionRef.length === 1) {
-        mirrorObjName.innerHTML = data.mirrorObj[0].name;
-      }
-      else {
-        mirrorObjName.innerHTML = "Not selected yet!"
-      
-    }
+  document.getElementById('submit-mm').onclick = () => {
+    const mirrorDir = document.querySelector('input[name="mirrorDir"]:checked').value;
   }
 </script>
