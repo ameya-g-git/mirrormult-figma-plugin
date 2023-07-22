@@ -61,7 +61,7 @@
 
   const sectionMM = document.getElementById("hidden-mm");
   const sectionRS = document.getElementById("hidden-rs");
-
+  
   buttonMM.addEventListener('click', function() {
         sectionMM.style.display = 'block';
         sectionRS.style.display = 'none';
@@ -71,7 +71,7 @@
         sectionRS.style.display = 'block';
         sectionMM.style.display = 'none';
     });
-
+  
   document.getElementById('submit-mm').onclick = () => {
     const mirrorDir = document.querySelector('input[name="mirrorDir"]:checked').value;
   }
