@@ -55,18 +55,20 @@
   window.onmessage = event => {
       const data = event.data.pluginMessage;
 
-      const mirrorObjName = document.querySelector("div.origin p")
+      const mirrorObjName = document.querySelector("div.origin p");
 
-      console.log(data.selectedObj);
+      const selectedObjName = data.selectedObj;
+
+      console.log(selectionLength);
       console.log("hi");
       
       if (data.selectedObj) {
         mirrorObjName.innerHTML = data.selectedObj;
       }
+      
       else {
         mirrorObjName.innerHTML = "Not selected yet!"
-      
-    }
+      };  
   }
   const buttonMM = document.getElementById("page-mm");
   const buttonRS = document.getElementById("page-rs");
