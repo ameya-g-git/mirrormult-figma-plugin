@@ -3,12 +3,13 @@ figma.showUI(__html__);
 
 figma.ui.resize(400, 500);
 
-const selectedObjects = [figma.currentPage.selection];
+const selection = figma.currentPage.selection;
+
+const selectedObjects = [selection];
 
 figma.currentPage.selection = [];
 
 function getSelectedObjName() {
-    const selection = figma.currentPage.selection;
     if (selection.length > 1) {
         return "Too many objects selected!"
     }
