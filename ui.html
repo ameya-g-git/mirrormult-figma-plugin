@@ -25,7 +25,7 @@
 
   <div id="origin-mm" class="origin">
     <span>Mirror Object:</span>
-    <p style="display: inline;">Not selected yet</p> <!-- changes based on selected object --> 
+    <p style="display: inline;">No object selected</p> <!-- changes based on selected object --> 
   </div>
 
 
@@ -44,26 +44,35 @@
   </div>  
 
   <div id="origin-rs" class="origin">
-    <input type="text">
+    <span>Mirror Object:</span>
+    <p style="display: inline;">No object selected</p> <!-- changes based on selected object --> 
   </div>
 </section>
+
+<!-- need to work on:
+* figuring out how empty origin obj checkbox will work (likely, changing sections will just uncheck the checkbox to make life easier)
+  * will also require an event listener in TS to detect when checkbox changes
+  * obviously, need to finish up rotsymm html + js postMessage
+  * after this, html and js are essentially done methinks
+-->
 
 <!-- JS -->
 <script>
   window.onmessage = event => { // listens for change in selected object to update respective element
       const data = event.data.pluginMessage;
 
-      const mirrorObjName = document.querySelector("div.origin p");
+      const mirrorObjElem = document.querySelectorAll("div.origin p");
 
       const selectedObjName = data.selectedObj;
-      
-      if (data.selectedObj) {
-        mirrorObjName.innerHTML = data.selectedObj;
-      }
 
-      else {
-        mirrorObjName.innerHTML = "Not selected yet!"
-      };  
+      for (const obj of mirrorObjElem)
+        if (selectedObjName) {
+          obj.innerHTML = data.selectedObj;
+        }
+
+        else {
+          obj.innerHTML = "Not selected yet!"
+        };  
   }
 
   const buttonMM = document.getElementById("page-mm");
@@ -77,11 +86,11 @@
         sectionRS.style.display = 'none';
     });
 
-    buttonRS.addEventListener('click', function() { // allows for the RotSymm button to take user to the Rotsymm Menu, with its specific inputs
-        sectionRS.style.display = 'block';
-        sectionMM.style.display = 'none';
-    });
-  
+  buttonRS.addEventListener('click', function() { // allows for the RotSymm button to take user to the Rotsymm Menu, with its specific inputs
+      sectionRS.style.display = 'block';
+      sectionMM.style.display = 'none';
+  });
+
   document.getElementById('submit-mm').onclick = () => { // posts MirrorMult message
     const mirrorDir = document.querySelector('input[name="mirrorDir"]:checked').value; // saves either "1" or "2" depending on which radio button is checked, Horizontal or Vertical
 
