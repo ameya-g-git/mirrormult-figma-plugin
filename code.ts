@@ -3,24 +3,26 @@ figma.showUI(__html__);
 
 figma.ui.resize(400, 500);
 
-const selectedObjects = [figma.currentPage.selection];
+const toolObjs = [figma.currentPage.selection]; // saves the objects for the plugin to mirror in a separate list for later
 
-figma.currentPage.selection = [];
+figma.currentPage.selection = []; // deselects all the objects as they are no longer needed
 
-function getSelectedObjName() {
+// add an outline to the objects to make it clear for later reference
+
+function getSelectedObjName() { // returns different messages depending on how many objs are selected
     const selection = figma.currentPage.selection;
 
     if (selection.length > 1) {
         return "Too many objects selected!"
     }
     else if (selection.length === 1) {
-        return selection[0].name; // Assuming you want the name of the first selected object
+        return selection[0].name; // selection is a list, so we need this notation to get the name of the selected obj
     }
     return "No object selected";
 
 };
 
-figma.on("selectionchange", () => {
+figma.on("selectionchange", () => { // posts the name of the selected o
    const selectedObjName = getSelectedObjName();
 
     figma.ui.postMessage({selectedObj: selectedObjName});
