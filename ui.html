@@ -25,7 +25,7 @@
 
   <div id="origin-mm" class="origin">
     <span>Mirror Object:</span>
-    <p style="display: inline;">Not selected yet</p> <!-- change with TS mayb --> 
+    <p style="display: inline;">Not selected yet</p> <!-- changes based on selected object --> 
   </div>
 
 
@@ -48,28 +48,24 @@
   </div>
 </section>
 
-<!-- honestly, to move forward concretely in this project, im gonna need to figure out how to communicate figma info to the plugin first -->
-
 <!-- JS -->
 <script>
-  window.onmessage = event => {
+  window.onmessage = event => { // listens for change in selected object to update respective element
       const data = event.data.pluginMessage;
 
       const mirrorObjName = document.querySelector("div.origin p");
 
       const selectedObjName = data.selectedObj;
-
-      console.log(selectionLength);
-      console.log("hi");
       
       if (data.selectedObj) {
         mirrorObjName.innerHTML = data.selectedObj;
       }
-      
+
       else {
         mirrorObjName.innerHTML = "Not selected yet!"
       };  
   }
+
   const buttonMM = document.getElementById("page-mm");
   const buttonRS = document.getElementById("page-rs");
 
@@ -86,13 +82,13 @@
         sectionMM.style.display = 'none';
     });
   
-  document.getElementById('submit-mm').onclick = () => {
+  document.getElementById('submit-mm').onclick = () => { // posts MirrorMult message
     const mirrorDir = document.querySelector('input[name="mirrorDir"]:checked').value; // saves either "1" or "2" depending on which radio button is checked, Horizontal or Vertical
 
     parent.postMessage({mmMessage: mirrorDir}, '*'); // sends the mirror direction for MirrorMult
   }
 
-  document.getElementById('submit-rs').onclick = () => {
+  document.getElementById('submit-rs').onclick = () => { // posts RotSymm message
     const numCopies = document.getElementById('num-copies').value;
 
   }
