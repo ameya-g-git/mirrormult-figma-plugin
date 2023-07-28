@@ -23,7 +23,9 @@ function getSelectedObjName() { // returns different messages depending on how m
 };
 
 figma.on("selectionchange", () => { // posts the name of the selected o
-   const selectedObjName = getSelectedObjName();
+    const selectedObjName = getSelectedObjName();
+
+    
 
     figma.ui.postMessage({selectedObj: selectedObjName});
 });
