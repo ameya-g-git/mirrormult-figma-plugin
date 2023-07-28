@@ -110,7 +110,21 @@
       sectionRS.style.display = 'block';
       sectionMM.style.display = 'none';
 
-      checkboxMM.checked = false
+      checkboxMM.checked = false;
+  });
+
+  // checkbox shenanigans
+  
+  checkboxMM.addEventListener('change', () => {
+    if (checkboxMM.checked) {
+      parent.postMessage({emptyObjMessage: true});
+    }
+  });
+
+  checkboxRS.addEventListener('change', () => {
+    if (checkboxRS.checked) {
+      parent.postMessage({emptyObjMessage: true});
+    }
   });
 
   // posting form information
