@@ -22,14 +22,23 @@ function getSelectedObjName() { // returns different messages depending on how m
 
 };
 
-figma.on("selectionchange", () => { // posts the name of the selected o
+figma.on("selectionchange", () => { // posts the name of the selected obj
     const selectedObjName = getSelectedObjName();
 
-    
+
 
     figma.ui.postMessage({selectedObj: selectedObjName});
 });
 
-figma.ui.onmessage = async(pluginMessage) => {
+figma.ui.onmessage = (mmMessage) => {
+    // mirror the mult
+}
 
+figma.ui.onmessage = (rsMessage) => {
+    // rot the symm
+}
+
+
+figma.ui.onmessage = (mirrorObjMessage) => {
+    // create empty object
 };
