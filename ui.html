@@ -28,6 +28,10 @@
     <p style="display: inline;">No object selected</p> <!-- changes based on selected object --> 
   </div>
 
+  <div class="mirror-obj">
+    <label for="mirror-obj-mm"></label>
+    <input id="mirror-obj-mm" type="checkbox">
+  </div>
 
   <div class="button">
     <button id="submit-mm">Mirror Selected Objects!</button>
@@ -44,8 +48,13 @@
   </div>  
 
   <div id="origin-rs" class="origin">
-    <span>Mirror Object:</span>
+    <span>Symmetry Origin:</span>
     <p style="display: inline;">No object selected</p> <!-- changes based on selected object --> 
+  </div>
+
+  <div class="mirror-obj">
+    <label for="mirror-obj-rs"></label>
+    <input id="mirror-obj-rs" type="checkbox">
   </div>
 </section>
 
@@ -92,9 +101,11 @@
   });
 
   document.getElementById('submit-mm').onclick = () => { // posts MirrorMult message
-    const mirrorDir = document.querySelector('input[name="mirrorDir"]:checked').value; // saves either "1" or "2" depending on which radio button is checked, Horizontal or Vertical
+    const mirrorHori = document.getElementById('hori').checked; // saves either true or false depending if the option was selected
+    const mirrorVert = document.getElementById('vert').checked; // saves either true or false depending if the option was selected
 
-    parent.postMessage({mmMessage: mirrorDir}, '*'); // sends the mirror direction for MirrorMult
+
+    parent.postMessage({mmMessage: {mirrorHori, mirrorVert}}, '*'); // sends the mirror direction for MirrorMult
   }
 
   document.getElementById('submit-rs').onclick = () => { // posts RotSymm message
