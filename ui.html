@@ -116,14 +116,14 @@
   // checkbox shenanigans
   
   checkboxMM.addEventListener('change', () => {
-    if (checkboxMM.checked) {
+    if (this.checked) {
       parent.postMessage({emptyObjMessage: true});
     }
   });
 
   checkboxRS.addEventListener('change', () => {
-    if (checkboxRS.checked) {
-      parent.postMessage({emptyObjMessage: true});
+    if (this.checked) {
+      parent.postMessage({emptyObjMessage: true}); // event listeners do not seem to be posting message 
     }
   });
 
