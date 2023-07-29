@@ -38,7 +38,17 @@ figma.ui.onmessage = (rsMessage) => {
     // rot the symm
 }
 
+figma.ui.onmessage = (emptyObjMessage) => {
+    const zoom = figma.viewport.zoom;
+    const center = figma.viewport.center
+    const size = 100; // holds a base size for the cursor at 100% zoom
 
-figma.ui.onmessage = (mirrorObjMessage) => {
-    // create empty object
+    const circle = figma.createEllipse();
+    circle.x = center.x;
+    circle.y = center.y;
+    circle.resize(size, size);
+    circle.fills = [{type:'SOLID', color: {r:1, g:0, b:1}}];
+
+    console.log(circle.x, circle.y);
+    
 };
