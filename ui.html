@@ -88,6 +88,8 @@
 
   // checkbox variables
 
+  const msgPlaceholder = "h";
+
   const checkboxMM = document.getElementById('mirror-obj-mm');
   const checkboxRS = document.getElementById('mirror-obj-rs');
 
@@ -100,30 +102,31 @@
   const sectionRS = document.getElementById("hidden-rs");
   
   buttonMM.addEventListener('click', function() { // allows for the MirrorMult button to take user to the MirrorMult Menu, with its specific inputs
-        sectionMM.style.display = 'block';
-        sectionRS.style.display = 'none';
+    sectionMM.style.display = 'block';
+    sectionRS.style.display = 'none';
 
-        checkboxRS.checked = false;
-    });
+    checkboxRS.checked = false;
+  });
 
   buttonRS.addEventListener('click', function() { // allows for the RotSymm button to take user to the Rotsymm Menu, with its specific inputs
-      sectionRS.style.display = 'block';
-      sectionMM.style.display = 'none';
+    sectionRS.style.display = 'block';
+    sectionMM.style.display = 'none';
 
-      checkboxMM.checked = false;
+    checkboxMM.checked = false;
   });
 
   // checkbox shenanigans
   
-  checkboxMM.addEventListener('change', () => {
+  checkboxMM.addEventListener('change', function() {
     if (this.checked) {
-      parent.postMessage({emptyObjMessage: true});
+      parent.postMessage({pluginMessage: true}, '*');
+      console.log('fella')
     }
   });
 
-  checkboxRS.addEventListener('change', () => {
+  checkboxRS.addEventListener('change', function() {
     if (this.checked) {
-      parent.postMessage({emptyObjMessage: true}); // event listeners do not seem to be posting message 
+      parent.postMessage({pluginMessage: true}); // event listeners do not seem to be posting message 
     }
   });
 
@@ -134,7 +137,7 @@
     const mirrorVert = document.getElementById('vert').checked; // holds either true or false depending if the option was selected
 
 
-    parent.postMessage({mmMessage: {mirrorHori, mirrorVert}}, '*'); // sends the mirror direction(s) for MirrorMult
+    parent.postMessage({pluginMessage: {mirrorHori, mirrorVert}}, '*'); // sends the mirror direction(s) for MirrorMult
   }
 
   document.getElementById('submit-rs').onclick = () => { // posts RotSymm message
