@@ -25,20 +25,12 @@ function getSelectedObjName() { // returns different messages depending on how m
 figma.on("selectionchange", () => { // posts the name of the selected obj
     const selectedObjName = getSelectedObjName();
 
-
-
     figma.ui.postMessage({selectedObj: selectedObjName});
 });
 
-figma.ui.onmessage = (mmMessage) => {
-    // mirror the mult
-}
-
-figma.ui.onmessage = (rsMessage) => {
-    // rot the symm
-}
-
 figma.ui.onmessage = (emptyObjMessage) => {
+    console.log("empty eyah")
+
     const zoom = figma.viewport.zoom;
     const center = figma.viewport.center
     const size = 100; // holds a base size for the cursor at 100% zoom
