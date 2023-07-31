@@ -28,19 +28,24 @@ figma.on("selectionchange", () => { // posts the name of the selected obj
     figma.ui.postMessage({selectedObj: selectedObjName});
 });
 
-figma.ui.onmessage = (emptyObjMessage) => {
-    console.log("empty eyah")
+figma.ui.onmessage = (pluginMessage) => {
+    const msgFor = pluginMessage.msgFor;
+    console.log(msgFor)
 
-    const zoom = figma.viewport.zoom;
-    const center = figma.viewport.center
-    const size = 100; // holds a base size for the cursor at 100% zoom
+    if (msgFor === 1) {
+        console.log("empty eyah")
 
-    const circle = figma.createEllipse();
-    circle.x = center.x;
-    circle.y = center.y;
-    circle.resize(size, size);
-    circle.fills = [{type:'SOLID', color: {r:1, g:0, b:1}}];
+        const zoom = figma.viewport.zoom;
+        const center = figma.viewport.center
+        const size = 50; // holds a base size for the cursor at 100% zoom
+        const sizeAdjusted = size / zoom;
 
-    console.log(circle.x, circle.y);
-    
+        const circle = figma.createEllipse();
+        circle.x = center.x;
+        circle.y = center.y;
+        circle.resize(sizeAdjusted, sizeAdjusted);
+        circle.fills = [{type:'SOLID', color: {r:1, g:0, b:1}}];
+
+        console.log(circle.x, circle.y);
+    }
 };
