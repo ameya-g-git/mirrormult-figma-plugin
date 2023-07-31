@@ -88,7 +88,7 @@
 
   // checkbox variables
 
-  const msgPlaceholder = "h";
+  let msgFor;
 
   const checkboxMM = document.getElementById('mirror-obj-mm');
   const checkboxRS = document.getElementById('mirror-obj-rs');
@@ -119,14 +119,15 @@
   
   checkboxMM.addEventListener('change', function() {
     if (this.checked) {
-      parent.postMessage({pluginMessage: true}, '*');
-      console.log('fella')
+      msgFor = 1;
+      parent.postMessage({pluginMessage: {msgFor}}, '*');
     }
   });
 
   checkboxRS.addEventListener('change', function() {
     if (this.checked) {
-      parent.postMessage({pluginMessage: true}); // event listeners do not seem to be posting message 
+      msgFor = 1;
+      parent.postMessage({pluginMessage: {msgFor}}, '*');
     }
   });
 
@@ -137,7 +138,7 @@
     const mirrorVert = document.getElementById('vert').checked; // holds either true or false depending if the option was selected
 
 
-    parent.postMessage({pluginMessage: {mirrorHori, mirrorVert}}, '*'); // sends the mirror direction(s) for MirrorMult
+    parent.postMessage({pluginMessage: {msgFor, mirrorHori, mirrorVert}}, '*'); // sends the mirror direction(s) for MirrorMult
   }
 
   document.getElementById('submit-rs').onclick = () => { // posts RotSymm message
