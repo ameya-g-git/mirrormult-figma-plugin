@@ -44,29 +44,34 @@ figma.ui.onmessage = (pluginMessage) => {
 
         const pinkCircle = figma.createEllipse();
         pinkCircle.x = center.x;
-        pinkCircle.y = center.y;
+        pinkCircle.y = center.y + (Math.sqrt(2) * sizeAdjusted); // figma considers the bounding box of the object to be its size, so the translation accounts for how the circle's bounding box is sqrt(2) bigger than the object's selection box
         pinkCircle.resize(sizeAdjusted, sizeAdjusted);
-        pinkCircle.rotation = 135;
         pinkCircle.name = '💖';
         pinkCircle.fills = [{type: 'SOLID', color: {r: 1, g: 63/255, b: 190/255}}];;
         pinkCircle.arcData = {startingAngle: 0, endingAngle: Math.PI, innerRadius: (10/12)};
+        pinkCircle.rotation = 135;
 
         const purpCircle = figma.createEllipse();
+        purpCircle.rotation = -45;
         purpCircle.x = center.x;
         purpCircle.y = center.y;
         purpCircle.resize(sizeAdjusted, sizeAdjusted);
-        purpCircle.rotation = -45;
         purpCircle.name = '💜';
         purpCircle.fills = [{type: 'SOLID', color: {r: 175/225, g: 11/255, b: 1}}];;
         purpCircle.arcData = {startingAngle: 0, endingAngle: Math.PI, innerRadius: (10/12)};
+        const ring = figma.flatten([pinkCircle, purpCircle]);
 
         const yellCircle = figma.createEllipse();
-        yellCircle.x = center.x;
-        yellCircle.y = center.y;
-        yellCircle.resize(sizeAdjusted, sizeAdjusted);
+        yellCircle.x = ring.x + (1/24 * ring.width);
+        yellCircle.y = ring.y + (1/24 * ring.height);
+        yellCircle.resize(sizeAdjusted * (11/12), sizeAdjusted * (11/12));
         yellCircle.name = '💛';
-        yellCircle.fills = [{type: 'SOLID', color: {r: 1, g: 184/255, b: 0}}];
+        yellCircle.strokes = [{type: 'SOLID', color: {r: 1, g: 184/255, b: 0}}];
+        yellCircle.strokeWeight = sizeAdjusted * (1/12);
+        yellCircle.fills = [];
         yellCircle.opacity = 0.8;
-        yellCircle.dashPattern = [sizeAdjusted * 8 / 39];
+        yellCircle.dashPattern = [sizeAdjusted * (6/36), sizeAdjusted * (6/36)];
+        yellCircle.strokeCap = 'ROUND';
+        yellCircle.strokeAlign = 'CENTER';
     }
 };
