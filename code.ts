@@ -116,6 +116,9 @@ figma.ui.onmessage = (pluginMessage) => {
 
             cursorGroup.insertChild(cursorGroup.children.length - 2, axisLine); // adds the line to the cursor group
             cursorGroup.name = '🪞/🔅 Cursor'
+
+            cursorPosition = [cursorGroup.x + (cursorGroup.width / 2), cursorGroup.y + (cursorGroup.height / 2)];
+            console.log(cursorPosition);
         }
     }
 };
