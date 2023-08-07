@@ -106,6 +106,8 @@
     sectionRS.style.display = 'none';
 
     checkboxRS.checked = false;
+    msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
+    parent.postMessage({pluginMessage: {msgFor}}, '*');
   });
 
   buttonRS.addEventListener('click', function() { // allows for the RotSymm button to take user to the Rotsymm Menu, with its specific inputs
@@ -113,22 +115,33 @@
     sectionMM.style.display = 'none';
 
     checkboxMM.checked = false;
+    
+    msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
+    parent.postMessage({pluginMessage: {msgFor}}, '*');
   });
 
   // checkbox shenanigans
   
   checkboxMM.addEventListener('change', function() {
     if (this.checked) {
-      msgFor = 1;
+      msgFor = 1; // lets code.ts know that the message is for the Empty Object checkbox
       parent.postMessage({pluginMessage: {msgFor}}, '*');
     }
+    else {
+      msgFor = 2;
+      parent.postMessage({pluginMessage: {msgFor}}, '*');
+    };
   });
 
   checkboxRS.addEventListener('change', function() {
     if (this.checked) {
-      msgFor = 1;
+      msgFor = 1;  // lets code.ts know that the message is for the Empty Object checkbox
       parent.postMessage({pluginMessage: {msgFor}}, '*');
     }
+    else {
+      msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
+      parent.postMessage({pluginMessage: {msgFor}}, '*');
+    };
   });
 
   // posting form information

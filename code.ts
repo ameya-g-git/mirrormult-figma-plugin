@@ -5,6 +5,9 @@ figma.ui.resize(400, 500);
 
 const toolObjs = [figma.currentPage.selection]; // saves the objects for the plugin to mirror in a separate list for later
 let cursorPosition;
+let cursorGroup; // so that cursorGroup has a type, allowing it to work as a condition within the msgFor === 2 statement
+const preferredName = '🪞/🔅 Cursor'; // holds the name of the cursor
+
 
 figma.currentPage.selection = []; // deselects all the objects as they are no longer needed
 
@@ -33,17 +36,14 @@ figma.on("selectionchange", () => { // posts the name of the selected obj
 
 figma.ui.onmessage = (pluginMessage) => {
     const msgFor = pluginMessage.msgFor;
-    console.log(msgFor)
-
-    // CHANGE THIS TO MAKE A COMPONENT OF THE CURSOR AND USE AN SVG FILE AS THE CURSOR InsteAD OF CREATING IT MANUALLY
 
     if (msgFor === 1) { // empty object checkbox is checked
         const zoom = figma.viewport.zoom;
         const center = figma.viewport.center
-        const size = 50; // holds a base size for the cursor at 100% zoom
+        const size = 36; // holds a base size for the cursor at 100% zoom
         const sizeAdjusted = size / zoom; // keeps the cursor the same visual size no matter the zoom
 
-        const pinkCircle = figma.createEllipse();
+        const pinkCircle = figma.createEllipse(); // pink half of the ring
         pinkCircle.x = center.x;
         pinkCircle.y = center.y + (Math.sqrt(2) * sizeAdjusted); // figma considers the bounding box of the object to be its size, so the translation accounts for how the circle's bounding box is sqrt(2) bigger than the object's selection box
         pinkCircle.resize(sizeAdjusted, sizeAdjusted);
@@ -52,7 +52,7 @@ figma.ui.onmessage = (pluginMessage) => {
         pinkCircle.arcData = {startingAngle: 0, endingAngle: Math.PI, innerRadius: (10/12)};
         pinkCircle.rotation = 135;
 
-        const purpCircle = figma.createEllipse();
+        const purpCircle = figma.createEllipse(); // purple half of the ring
         purpCircle.rotation = -45;
         purpCircle.x = center.x;
         purpCircle.y = center.y;
@@ -60,7 +60,7 @@ figma.ui.onmessage = (pluginMessage) => {
         purpCircle.name = '💜';
         purpCircle.fills = [{type: 'SOLID', color: {r: 175/225, g: 11/255, b: 1}}];;
         purpCircle.arcData = {startingAngle: 0, endingAngle: Math.PI, innerRadius: (10/12)};
-        const ring = figma.flatten([pinkCircle, purpCircle]);
+        const ring = figma.flatten([pinkCircle, purpCircle]); // makes the two semicircles into one object as to get a more useful coordinate for alignment later on
         ring.name = '💖/💜';
 
         const yellCircle = figma.createEllipse(); // yellow dashed border circle generation
@@ -76,7 +76,7 @@ figma.ui.onmessage = (pluginMessage) => {
         yellCircle.strokeCap = 'ROUND';
         yellCircle.strokeAlign = 'CENTER';
 
-        const cursorGroup = figma.group([ring, yellCircle], figma.currentPage); // initializes the group for the cursor's objects
+        cursorGroup = figma.group([ring, yellCircle], figma.currentPage); // initializes the group for the cursor's objects
 
         for (let i = 0; i < 4; i++) { // axis generation
             const axisLine = figma.createLine();
@@ -115,10 +115,15 @@ figma.ui.onmessage = (pluginMessage) => {
             axisLine.name += ' Axis'
 
             cursorGroup.insertChild(cursorGroup.children.length - 2, axisLine); // adds the line to the cursor group
-            cursorGroup.name = '🪞/🔅 Cursor'
+            cursorGroup.name = preferredName;
 
             cursorPosition = [cursorGroup.x + (cursorGroup.width / 2), cursorGroup.y + (cursorGroup.height / 2)];
-            console.log(cursorPosition);
+        }
+    }
+    else if (msgFor === 2) { // empty object checkbox is deselected
+        const cursorFound = figma.root.findOne(node => node.type === 'GROUP' && node.name === preferredName);
+        if (cursorFound) {
+            cursorFound.remove();
         }
     }
 };
