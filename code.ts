@@ -4,6 +4,7 @@ figma.showUI(__html__);
 figma.ui.resize(400, 500);
 
 const toolObjs = [figma.currentPage.selection]; // saves the objects for the plugin to mirror in a separate list for later
+let cursorPosition;
 
 figma.currentPage.selection = []; // deselects all the objects as they are no longer needed
 
@@ -60,8 +61,9 @@ figma.ui.onmessage = (pluginMessage) => {
         purpCircle.fills = [{type: 'SOLID', color: {r: 175/225, g: 11/255, b: 1}}];;
         purpCircle.arcData = {startingAngle: 0, endingAngle: Math.PI, innerRadius: (10/12)};
         const ring = figma.flatten([pinkCircle, purpCircle]);
+        ring.name = '💖/💜';
 
-        const yellCircle = figma.createEllipse();
+        const yellCircle = figma.createEllipse(); // yellow dashed border circle generation
         yellCircle.x = ring.x + (1/24 * ring.width);
         yellCircle.y = ring.y + (1/24 * ring.height);
         yellCircle.resize(sizeAdjusted * (11/12), sizeAdjusted * (11/12));
@@ -70,8 +72,50 @@ figma.ui.onmessage = (pluginMessage) => {
         yellCircle.strokeWeight = sizeAdjusted * (1/12);
         yellCircle.fills = [];
         yellCircle.opacity = 0.8;
-        yellCircle.dashPattern = [sizeAdjusted * (6/36), sizeAdjusted * (6/36)];
+        yellCircle.dashPattern = [sizeAdjusted * (1/6), sizeAdjusted * (1/6)];
         yellCircle.strokeCap = 'ROUND';
         yellCircle.strokeAlign = 'CENTER';
+
+        const cursorGroup = figma.group([ring, yellCircle], figma.currentPage); // initializes the group for the cursor's objects
+
+        for (let i = 0; i < 4; i++) { // axis generation
+            const axisLine = figma.createLine();
+            axisLine.strokes = [{type: 'SOLID', color: {r: 102/255, g: 102/255, b: 102/255}}]
+            axisLine.strokeWeight = sizeAdjusted / 12;
+            axisLine.resize(sizeAdjusted / 2, 0);
+            axisLine.strokeCap = 'ROUND';
+            
+            switch (i) {
+                case 0: // top line generation
+                    axisLine.rotation = 90;
+                    axisLine.x = ring.x + (sizeAdjusted / 2) + (sizeAdjusted / 24);
+                    axisLine.y = ring.y + (sizeAdjusted / 4);
+                    axisLine.name = 'Top';
+                    break;
+                case 1: // right line generation
+                    axisLine.x = ring.x + ((3 * sizeAdjusted) / 4);
+                    axisLine.y = ring.y + (sizeAdjusted / 2) + (sizeAdjusted / 24);
+                    axisLine.name = 'Right';
+                    break;    
+                case 2: // bottom line generation
+                    axisLine.rotation = 90;
+                    axisLine.x = ring.x + (sizeAdjusted / 2) + (sizeAdjusted / 24);
+                    axisLine.y = ring.y + ((5 * sizeAdjusted) / 4);
+                    axisLine.name = 'Bottom';
+                    break
+                case 3: // left line generation
+                    axisLine.x = ring.x - (sizeAdjusted / 4);
+                    axisLine.y = ring.y + (sizeAdjusted / 2) + (sizeAdjusted / 24);
+                    axisLine.name = 'Left';
+                    break;                
+                default:
+                    break;
+            }
+
+            axisLine.name += ' Axis'
+
+            cursorGroup.insertChild(cursorGroup.children.length - 2, axisLine); // adds the line to the cursor group
+            cursorGroup.name = '🪞/🔅 Cursor'
+        }
     }
 };
