@@ -3,15 +3,16 @@ figma.showUI(__html__);
 
 figma.ui.resize(400, 500);
 
-const toolObjs = [figma.currentPage.selection]; // saves the objects for the plugin to mirror in a separate list for later
-let cursorPosition;
+const toolObjs = [figma.currentPage.selection][0]; // saves the objects for the plugin to mirror in a separate list for later
+let cursorPosition : number[]; // see if this works lol
 let cursorGroup; // so that cursorGroup has a type, allowing it to work as a condition within the msgFor === 2 statement
 const preferredName = '🪞/🔅 Cursor'; // holds the name of the cursor
 
-
 figma.currentPage.selection = []; // deselects all the objects as they are no longer needed
 
-// add an outline to the objects to make it clear for later reference
+console.log(toolObjs)
+
+// code below updates ui with the currently selected object
 
 function getSelectedObjName() { // returns different messages depending on how many objs are selected
     const selection = figma.currentPage.selection;
@@ -32,10 +33,20 @@ figma.on("selectionchange", () => { // posts the name of the selected obj
     figma.ui.postMessage({selectedObj: selectedObjName});
 });
 
+/* ----------- */
+// function below makes each toolObj's components have the same coordinates and scale as the original object
+function similarComponent(obj : SceneNode) {
+    var objInst = figma.createComponent();
+    objInst.appendChild(obj);
+    objInst.resize(obj.width, obj.height);
+    objInst.x = obj.x;
+    objInst.y = obj.y;
 
+    return objInst;
+}
 
 figma.ui.onmessage = (pluginMessage) => {
-    const msgFor = pluginMessage.msgFor;
+    const msgFor = pluginMessage.msgFor; // allows for easy designation of which pluginMessage is received
 
     if (msgFor === 1) { // empty object checkbox is checked
         const zoom = figma.viewport.zoom;
@@ -115,15 +126,29 @@ figma.ui.onmessage = (pluginMessage) => {
             axisLine.name += ' Axis'
 
             cursorGroup.insertChild(cursorGroup.children.length - 2, axisLine); // adds the line to the cursor group
-            cursorGroup.name = preferredName;
-
             cursorPosition = [cursorGroup.x + (cursorGroup.width / 2), cursorGroup.y + (cursorGroup.height / 2)];
         }
+        
+        cursorGroup.name = preferredName;
     }
     else if (msgFor === 2) { // empty object checkbox is deselected
         const cursorFound = figma.root.findOne(node => node.type === 'GROUP' && node.name === preferredName);
         if (cursorFound) {
             cursorFound.remove();
+        }
+    }
+    else if (msgFor === 3) {
+        const mirrorHori = pluginMessage.mirrorHori;
+        const mirrorVert = pluginMessage.mirrorVert;
+        let objInst;
+
+        for (var obj of toolObjs) {
+            if (mirrorHori || mirrorVert) {
+                if (mirrorHori) {
+                    objInst = similarComponent(obj);
+                    objInst.x += (objInst.x - cursorPosition[0])
+                }
+            }
         }
     }
 };

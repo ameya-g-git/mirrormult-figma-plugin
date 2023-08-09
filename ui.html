@@ -88,7 +88,7 @@
 
   // checkbox variables
 
-  let msgFor;
+  let msgFor = 0;
 
   const checkboxMM = document.getElementById('mirror-obj-mm');
   const checkboxRS = document.getElementById('mirror-obj-rs');
@@ -150,6 +150,7 @@
     const mirrorHori = document.getElementById('hori').checked; // holds either true or false depending if the option was selected
     const mirrorVert = document.getElementById('vert').checked; // holds either true or false depending if the option was selected
 
+    msgFor = 3;
 
     parent.postMessage({pluginMessage: {msgFor, mirrorHori, mirrorVert}}, '*'); // sends the mirror direction(s) for MirrorMult
   }
