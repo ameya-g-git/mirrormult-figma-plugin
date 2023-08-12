@@ -4,7 +4,7 @@ figma.showUI(__html__);
 figma.ui.resize(400, 500);
 
 const toolObjs = [figma.currentPage.selection][0]; // saves the objects for the plugin to mirror in a separate list for later
-let cursorPosition : number[]; // see if this works lol
+let cursorPosition = [0]; // see if this works lol
 let cursorGroup; // so that cursorGroup has a type, allowing it to work as a condition within the msgFor === 2 statement
 const preferredName = '🪞/🔅 Cursor'; // holds the name of the cursor
 
@@ -32,10 +32,10 @@ figma.on("selectionchange", () => { // posts the name of the selected obj
 
     figma.ui.postMessage({selectedObj: selectedObjName});
 });
-
 /* ----------- */
+
 // function below makes each toolObj's components have the same coordinates and scale as the original object
-function similarComponent(obj : SceneNode) {
+function similarComponent(obj) {
     var objInst = figma.createComponent();
     objInst.appendChild(obj);
     objInst.resize(obj.width, obj.height);
@@ -43,6 +43,14 @@ function similarComponent(obj : SceneNode) {
     objInst.y = obj.y;
 
     return objInst;
+}
+/* ----------- */
+
+// function below checks if cursor is on current page
+function findCursor() {
+    const cursor = figma.root.findOne(node => node.type === 'GROUP' && node.name === preferredName);
+
+    return cursor;
 }
 
 figma.ui.onmessage = (pluginMessage) => {
@@ -126,13 +134,14 @@ figma.ui.onmessage = (pluginMessage) => {
             axisLine.name += ' Axis'
 
             cursorGroup.insertChild(cursorGroup.children.length - 2, axisLine); // adds the line to the cursor group
-            cursorPosition = [cursorGroup.x + (cursorGroup.width / 2), cursorGroup.y + (cursorGroup.height / 2)];
         }
+
+        cursorPosition = [cursorGroup.x + (cursorGroup.width / 2), cursorGroup.y + (cursorGroup.height / 2)];
         
         cursorGroup.name = preferredName;
     }
     else if (msgFor === 2) { // empty object checkbox is deselected
-        const cursorFound = figma.root.findOne(node => node.type === 'GROUP' && node.name === preferredName);
+        const cursorFound = findCursor();
         if (cursorFound) {
             cursorFound.remove();
         }
@@ -141,14 +150,33 @@ figma.ui.onmessage = (pluginMessage) => {
         const mirrorHori = pluginMessage.mirrorHori;
         const mirrorVert = pluginMessage.mirrorVert;
         let objInst;
+        let originPosition = [0];
+
+        const cursorOn = findCursor();
+
+        if (cursorOn) {
+            originPosition = cursorPosition;
+        }
+        else {
+
+        }
 
         for (var obj of toolObjs) {
             if (mirrorHori || mirrorVert) {
                 if (mirrorHori) {
                     objInst = similarComponent(obj);
-                    objInst.x += (objInst.x - cursorPosition[0])
+                    objInst.x += (-2) * (objInst.x - originPosition[0])
                 }
             }
         }
     }
+
+    figma.on('close', () => {
+        const cursors = figma.root.findAll(node => node.type === 'GROUP' && node.name === preferredName); // on the off chance someone has multiple cursors on screen accidentally
+        if (cursors) {
+            for (var cursorDup of cursors) {
+                cursorDup.remove();
+            }
+        }
+    });
 };
