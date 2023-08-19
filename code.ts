@@ -171,7 +171,10 @@ figma.ui.onmessage = async(pluginMessage) => {
         for (var obj of toolObjs) {
             if (mirrorHori || mirrorVert) {
                 if (mirrorHori) { // horizontal mirror
-                    objComp = componentify(obj)
+                    if (!objComp) { 
+                        objComp = componentify(obj)
+                    };
+
                     objInst = objComp.createInstance();
                     
                     objInst.x = objComp.x + (-2) * (objComp.x - originPosition[0]); // uses calculations to determine the object's horizontal position based on origin position
@@ -180,12 +183,20 @@ figma.ui.onmessage = async(pluginMessage) => {
                         [0, 1, objInst.y] 
                     ];
                     objInst.y = objComp.y;
-                    console.log((objInst.x));
-                    console.log(originPosition);
-                }
+                };
                 
-                if (mirrorVert) {
+                if (mirrorVert) { // vertical mirror
+                    if (!objComp) { 
+                        objComp = componentify(obj)
+                    };
+                    objInst = objComp.createInstance();
                     
+                    objInst.x = objComp.x
+                    objInst.y = objComp.y + (-2) * (objComp.y - originPosition[1]);
+                    objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are vertically reflected across the origin
+                        [1, 0, objInst.x],
+                        [0, -1, objInst.y] 
+                    ];
                 }
             }
         }
