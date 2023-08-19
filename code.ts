@@ -152,11 +152,13 @@ figma.ui.onmessage = async(pluginMessage) => {
     else if (msgFor === 3) { // mirrormult functionality
         const mirrorHori = pluginMessage.mirrorHori;
         const mirrorVert = pluginMessage.mirrorVert;
-        let obj;
         let objComp;
         let objInst;
         let origin;
         let originPosition = [0, 0];
+        let mirrorList = []; // will hold all the reflected objects in their respective groups
+        let groupList = []; // if toolObjs is greater than 1, this will hold all the group nodes to group altogether
+        let mmGroup; // because figma doesnt let there be empty groups so i need a variable to hold the group
 
         const cursorGroup = figma.root.findOne(node => node.type === 'GROUP' && node.name === preferredName);
 
@@ -166,16 +168,17 @@ figma.ui.onmessage = async(pluginMessage) => {
         else {
             origin = figma.root.findOne(node => node.name === getSelectedObjName());
         }
+        
         originPosition = [origin.x + (origin.width / 2), origin.y + (origin.height / 2)]
 
-
-        for (let i = 0; i < toolObjs.length; i++) {
-            obj = toolObjs[i];
-
+        for (let obj of toolObjs) {
+            console.log(obj)
             if (mirrorHori || mirrorVert) {
                 if (mirrorHori) { // horizontal mirror
                     if (!objComp) { 
                         objComp = componentify(obj);
+                        objComp.name = obj.name;
+                        mirrorList.push(objComp)
                     };
                     objInst = objComp.createInstance();
                     
@@ -185,12 +188,18 @@ figma.ui.onmessage = async(pluginMessage) => {
                         [-1, 0, objInst.x],
                         [0, 1, objInst.y] 
                     ];
+
+                    objInst.name = objComp.name + '-H'
+                    mirrorList.push(objInst)
                 };
                 
                 if (mirrorVert) { // vertical mirror
                     if (!objComp) { 
                         objComp = componentify(obj);
+                        objComp.name = obj.name;
+                        mirrorList.push(objComp)
                     };
+                    
                     objInst = objComp.createInstance();
                     
                     objInst.x = objComp.x;
@@ -199,11 +208,15 @@ figma.ui.onmessage = async(pluginMessage) => {
                         [1, 0, objInst.x],
                         [0, -1, objInst.y] 
                     ];
-                }
+                    
+                    objInst.name = objComp.name + '-V'
+                    mirrorList.push(objInst)
+                };
 
-                if (mirrorHori && mirrorVert) { // if both are selected, there's gonna need to be one at the remaining corner
-                    if (!objComp) { 
+                if (mirrorHori && mirrorVert) { // if both are selected, there's gonna need to be one more reflected object at the remaining corner
+                    if (!objComp) { // unnecessary conditional, but to reduce errors im just gonna keep it lol
                         objComp = componentify(obj);
+                        objComp.name = obj.name;
                     };
                     objInst = objComp.createInstance();
                     
@@ -213,17 +226,43 @@ figma.ui.onmessage = async(pluginMessage) => {
                         [-1, 0, objInst.x],
                         [0, -1, objInst.y]
                     ];
+                    
+                    objInst.name = objComp.name + '-HV'
+                    mirrorList.push(objInst)
+                };
+
+                mmGroup = figma.group(mirrorList, figma.currentPage);
+                mmGroup.name = '🪞 ' + obj.name;
+
+                if (toolObjs.length > 1) {
+                    groupList.push(mmGroup);
+                };
+
+                objComp = null; // resets objComp so the componentify functions work for the next obj in toolObjs
+                mirrorList = []; // resets mirrorList for next obj in toolObjs
+            };
+        };
+
+        if (groupList) {
+            mmGroup = figma.group(groupList, figma.currentPage);
+            mmGroup.name = '🪞 ';
+            for (let i = 0; i < toolObjs.length; i++) {
+                let obj = toolObjs[i];
+                mmGroup.name += obj.name + ', ';   
+                
+                if (i >= 3) { // more than 3 objects selected
+                    mmGroup.name += '...';
                 }
-            }
+            };
+        };  
+    }
+};
+
+figma.on('close', () => {
+    const cursors = figma.root.findAll(node => node.type === 'GROUP' && node.name === preferredName); // on the off chance someone has multiple cursors on screen accidentally
+    if (cursors) {
+        for (var cursorDup of cursors) {
+            cursorDup.remove();
         }
     }
-
-    figma.on('close', () => {
-        const cursors = figma.root.findAll(node => node.type === 'GROUP' && node.name === preferredName); // on the off chance someone has multiple cursors on screen accidentally
-        if (cursors) {
-            for (var cursorDup of cursors) {
-                cursorDup.remove();
-            }
-        }
-    });
-};
+});
