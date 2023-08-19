@@ -35,12 +35,12 @@ figma.on("selectionchange", () => { // posts the name of the selected obj
 /* ----------- */
 
 // function below makes each toolObj's components have the same coordinates and scale as the original object
-function similarComponent(obj) {
-    var objInst = figma.createComponent();
+function componentify(obj) {
+    var objInst = figma.createComponent()
     objInst.appendChild(obj);
-    objInst.resize(obj.width, obj.height);
     objInst.x = obj.x;
     objInst.y = obj.y;
+    objInst.resize(obj.width, obj.height);
 
     return objInst;
 }
@@ -53,7 +53,7 @@ function findCursor() {
     return cursor;
 }
 
-figma.ui.onmessage = (pluginMessage) => {
+figma.ui.onmessage = async(pluginMessage) => {
     const msgFor = pluginMessage.msgFor; // allows for easy designation of which pluginMessage is received
 
     if (msgFor === 1) { // empty object checkbox is checked
@@ -136,9 +136,8 @@ figma.ui.onmessage = (pluginMessage) => {
             cursorGroup.insertChild(cursorGroup.children.length - 2, axisLine); // adds the line to the cursor group
         }
 
-        cursorPosition = [cursorGroup.x + (cursorGroup.width / 2), cursorGroup.y + (cursorGroup.height / 2)];
-        
         cursorGroup.name = preferredName;
+        figma.currentPage.selection = [cursorGroup];
     }
     else if (msgFor === 2) { // empty object checkbox is deselected
         const cursorFound = findCursor();
@@ -146,26 +145,41 @@ figma.ui.onmessage = (pluginMessage) => {
             cursorFound.remove();
         }
     }
-    else if (msgFor === 3) {
+    else if (msgFor === 3) { // mirrormult functionality
         const mirrorHori = pluginMessage.mirrorHori;
         const mirrorVert = pluginMessage.mirrorVert;
+        let objComp;
         let objInst;
-        let originPosition = [0];
+        let originPosition = [0, 0];
 
-        const cursorOn = findCursor();
+        const cursorGroup = figma.root.findOne(node => node.type === 'GROUP' && node.name === preferredName);
 
-        if (cursorOn) {
+        if (cursorGroup) {
+            cursorPosition = [cursorGroup.x + (cursorGroup.width / 2), cursorGroup.y + (cursorGroup.height / 2)]
             originPosition = cursorPosition;
         }
         else {
-
+            originPosition = figma.currentPage.selection[0];
         }
 
         for (var obj of toolObjs) {
             if (mirrorHori || mirrorVert) {
                 if (mirrorHori) {
-                    objInst = similarComponent(obj);
-                    objInst.x += (-2) * (objInst.x - originPosition[0])
+                    objComp = componentify(obj);
+                    objInst = objComp.createInstance()
+                    obj.relativeTransform = [ // places the source obj (from toolObjs) directly at where the component frame is
+                        [1, 0, 0],
+                        [0, 1, 0]
+                    ];
+                    
+                    objInst.x = objComp.x + (-2) * (objComp.x - originPosition[0]); // uses calculations to determine the object's horizontal position based on origin position
+                    objInst.relativeTransform = [
+                        [-1, 0, objInst.x],
+                        [0, 1, objInst.y] 
+                    ];
+                    objInst.y = objComp.y;
+                    console.log((objInst.x));
+                    console.log(originPosition);
                 }
             }
         }
