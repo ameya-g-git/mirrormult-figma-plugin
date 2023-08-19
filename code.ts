@@ -10,8 +10,6 @@ const preferredName = '🪞/🔅 Cursor'; // holds the name of the cursor
 
 figma.currentPage.selection = []; // deselects all the objects as they are no longer needed
 
-console.log(toolObjs)
-
 // code below updates ui with the currently selected object
 
 function getSelectedObjName() { // returns different messages depending on how many objs are selected
@@ -154,48 +152,66 @@ figma.ui.onmessage = async(pluginMessage) => {
     else if (msgFor === 3) { // mirrormult functionality
         const mirrorHori = pluginMessage.mirrorHori;
         const mirrorVert = pluginMessage.mirrorVert;
+        let obj;
         let objComp;
         let objInst;
+        let origin;
         let originPosition = [0, 0];
 
         const cursorGroup = figma.root.findOne(node => node.type === 'GROUP' && node.name === preferredName);
 
         if (cursorGroup) {
-            cursorPosition = [cursorGroup.x + (cursorGroup.width / 2), cursorGroup.y + (cursorGroup.height / 2)]
-            originPosition = cursorPosition;
+            origin = cursorGroup
         }
         else {
-            originPosition = figma.currentPage.selection[0];
+            origin = figma.root.findOne(node => node.name === getSelectedObjName());
         }
+        originPosition = [origin.x + (origin.width / 2), origin.y + (origin.height / 2)]
 
-        for (var obj of toolObjs) {
+
+        for (let i = 0; i < toolObjs.length; i++) {
+            obj = toolObjs[i];
+
             if (mirrorHori || mirrorVert) {
                 if (mirrorHori) { // horizontal mirror
                     if (!objComp) { 
-                        objComp = componentify(obj)
+                        objComp = componentify(obj);
                     };
-
                     objInst = objComp.createInstance();
                     
                     objInst.x = objComp.x + (-2) * (objComp.x - originPosition[0]); // uses calculations to determine the object's horizontal position based on origin position
+                    objInst.y = objComp.y;
                     objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are horizontally reflected across the origin
                         [-1, 0, objInst.x],
                         [0, 1, objInst.y] 
                     ];
-                    objInst.y = objComp.y;
                 };
                 
                 if (mirrorVert) { // vertical mirror
                     if (!objComp) { 
-                        objComp = componentify(obj)
+                        objComp = componentify(obj);
                     };
                     objInst = objComp.createInstance();
                     
-                    objInst.x = objComp.x
-                    objInst.y = objComp.y + (-2) * (objComp.y - originPosition[1]);
+                    objInst.x = objComp.x;
+                    objInst.y = objComp.y + (-2) * (objComp.y - originPosition[1]); // same calculations but for y coord
                     objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are vertically reflected across the origin
                         [1, 0, objInst.x],
                         [0, -1, objInst.y] 
+                    ];
+                }
+
+                if (mirrorHori && mirrorVert) { // if both are selected, there's gonna need to be one at the remaining corner
+                    if (!objComp) { 
+                        objComp = componentify(obj);
+                    };
+                    objInst = objComp.createInstance();
+                    
+                    objInst.x = objComp.x + (-2) * (objComp.x - originPosition[0]); // calculations but for both x and y!!!!!
+                    objInst.y = objComp.y + (-2) * (objComp.y - originPosition[1]);
+                    objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are diagonally reflected across the origin
+                        [-1, 0, objInst.x],
+                        [0, -1, objInst.y]
                     ];
                 }
             }
