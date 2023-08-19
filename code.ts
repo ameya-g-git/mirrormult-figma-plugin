@@ -36,15 +36,21 @@ figma.on("selectionchange", () => { // posts the name of the selected obj
 
 // function below makes each toolObj's components have the same coordinates and scale as the original object
 function componentify(obj) {
-    var objInst = figma.createComponent()
-    objInst.appendChild(obj);
-    objInst.x = obj.x;
-    objInst.y = obj.y;
-    objInst.resize(obj.width, obj.height);
+    const objComp = figma.createComponent()
+    objComp.appendChild(obj);
+    objComp.x = obj.x;
+    objComp.y = obj.y;
+    objComp.resize(obj.width, obj.height);
 
-    return objInst;
+    obj.relativeTransform = [ // places the source obj (from toolObjs) directly at where the component frame is
+        [1, 0, 0],
+        [0, 1, 0]
+    ];
+
+    return objComp;
 }
 /* ----------- */
+
 
 // function below checks if cursor is on current page
 function findCursor() {
@@ -164,22 +170,22 @@ figma.ui.onmessage = async(pluginMessage) => {
 
         for (var obj of toolObjs) {
             if (mirrorHori || mirrorVert) {
-                if (mirrorHori) {
-                    objComp = componentify(obj);
-                    objInst = objComp.createInstance()
-                    obj.relativeTransform = [ // places the source obj (from toolObjs) directly at where the component frame is
-                        [1, 0, 0],
-                        [0, 1, 0]
-                    ];
+                if (mirrorHori) { // horizontal mirror
+                    objComp = componentify(obj)
+                    objInst = objComp.createInstance();
                     
                     objInst.x = objComp.x + (-2) * (objComp.x - originPosition[0]); // uses calculations to determine the object's horizontal position based on origin position
-                    objInst.relativeTransform = [
+                    objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are horizontally reflected across the origin
                         [-1, 0, objInst.x],
                         [0, 1, objInst.y] 
                     ];
                     objInst.y = objComp.y;
                     console.log((objInst.x));
                     console.log(originPosition);
+                }
+                
+                if (mirrorVert) {
+                    
                 }
             }
         }
