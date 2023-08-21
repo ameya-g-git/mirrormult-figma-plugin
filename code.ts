@@ -4,6 +4,10 @@ figma.showUI(__html__);
 figma.ui.resize(400, 500);
 
 const toolObjs = [figma.currentPage.selection][0]; // saves the objects for the plugin to mirror in a separate list for later
+
+const toolObjNames = toolObjs.map(obj => obj.name); // maps items from a defined list and allows you to create a new list by taking properties of each item from that predefined list, woa!!!
+figma.ui.postMessage({toolObjNames});
+
 let cursorPosition = [0]; // see if this works lol
 let cursorGroup; // so that cursorGroup has a type, allowing it to work as a condition within the msgFor === 2 statement
 const preferredName = '🪞/🔅 Cursor'; // holds the name of the cursor
@@ -149,7 +153,7 @@ figma.ui.onmessage = async(pluginMessage) => {
             cursorFound.remove();
         }
     }
-    else if (msgFor === 3) { // mirrormult functionality
+    else if (msgFor === 3 || msgFor === 4) { // plugin functionality
         const mirrorHori = pluginMessage.mirrorHori;
         const mirrorVert = pluginMessage.mirrorVert;
         let objComp;
@@ -171,90 +175,97 @@ figma.ui.onmessage = async(pluginMessage) => {
         
         originPosition = [origin.x + (origin.width / 2), origin.y + (origin.height / 2)]
 
-        for (let obj of toolObjs) {
-            console.log(obj)
-            if (mirrorHori || mirrorVert) {
-                if (mirrorHori) { // horizontal mirror
-                    if (!objComp) { 
-                        objComp = componentify(obj);
-                        objComp.name = obj.name;
-                        mirrorList.push(objComp)
-                    };
-                    objInst = objComp.createInstance();
-                    
-                    objInst.x = objComp.x + (-2) * (objComp.x - originPosition[0]); // uses calculations to determine the object's horizontal position based on origin position
-                    objInst.y = objComp.y;
-                    objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are horizontally reflected across the origin
-                        [-1, 0, objInst.x],
-                        [0, 1, objInst.y] 
-                    ];
 
-                    objInst.name = objComp.name + '-H'
-                    mirrorList.push(objInst)
-                };
-                
-                if (mirrorVert) { // vertical mirror
-                    if (!objComp) { 
-                        objComp = componentify(obj);
-                        objComp.name = obj.name;
-                        mirrorList.push(objComp)
+        if (msgFor === 3) { // mirrormult functionality
+            for (let obj of toolObjs) {
+                console.log(obj)
+                if (mirrorHori || mirrorVert) {
+                    if (mirrorHori) { // horizontal mirror
+                        if (!objComp) { 
+                            objComp = componentify(obj);
+                            objComp.name = obj.name;
+                            mirrorList.push(objComp)
+                        };
+                        objInst = objComp.createInstance();
+                        
+                        objInst.x = objComp.x + (-2) * (objComp.x - originPosition[0]); // uses calculations to determine the object's horizontal position based on origin position
+                        objInst.y = objComp.y;
+                        objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are horizontally reflected across the origin
+                            [-1, 0, objInst.x],
+                            [0, 1, objInst.y] 
+                        ];
+
+                        objInst.name = objComp.name + '-H'
+                        mirrorList.push(objInst)
                     };
                     
-                    objInst = objComp.createInstance();
-                    
-                    objInst.x = objComp.x;
-                    objInst.y = objComp.y + (-2) * (objComp.y - originPosition[1]); // same calculations but for y coord
-                    objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are vertically reflected across the origin
-                        [1, 0, objInst.x],
-                        [0, -1, objInst.y] 
-                    ];
-                    
-                    objInst.name = objComp.name + '-V'
-                    mirrorList.push(objInst)
-                };
-
-                if (mirrorHori && mirrorVert) { // if both are selected, there's gonna need to be one more reflected object at the remaining corner
-                    if (!objComp) { // unnecessary conditional, but to reduce errors im just gonna keep it lol
-                        objComp = componentify(obj);
-                        objComp.name = obj.name;
+                    if (mirrorVert) { // vertical mirror
+                        if (!objComp) { 
+                            objComp = componentify(obj);
+                            objComp.name = obj.name;
+                            mirrorList.push(objComp)
+                        };
+                        
+                        objInst = objComp.createInstance();
+                        
+                        objInst.x = objComp.x;
+                        objInst.y = objComp.y + (-2) * (objComp.y - originPosition[1]); // same calculations but for y coord
+                        objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are vertically reflected across the origin
+                            [1, 0, objInst.x],
+                            [0, -1, objInst.y] 
+                        ];
+                        
+                        objInst.name = objComp.name + '-V'
+                        mirrorList.push(objInst)
                     };
-                    objInst = objComp.createInstance();
-                    
-                    objInst.x = objComp.x + (-2) * (objComp.x - originPosition[0]); // calculations but for both x and y!!!!!
-                    objInst.y = objComp.y + (-2) * (objComp.y - originPosition[1]);
-                    objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are diagonally reflected across the origin
-                        [-1, 0, objInst.x],
-                        [0, -1, objInst.y]
-                    ];
-                    
-                    objInst.name = objComp.name + '-HV'
-                    mirrorList.push(objInst)
+
+                    if (mirrorHori && mirrorVert) { // if both are selected, there's gonna need to be one more reflected object at the remaining corner
+                        if (!objComp) { // unnecessary conditional, but to reduce errors im just gonna keep it lol
+                            objComp = componentify(obj);
+                            objComp.name = obj.name;
+                        };
+                        objInst = objComp.createInstance();
+                        
+                        objInst.x = objComp.x + (-2) * (objComp.x - originPosition[0]); // calculations but for both x and y!!!!!
+                        objInst.y = objComp.y + (-2) * (objComp.y - originPosition[1]);
+                        objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are diagonally reflected across the origin
+                            [-1, 0, objInst.x],
+                            [0, -1, objInst.y]
+                        ];
+                        
+                        objInst.name = objComp.name + '-HV'
+                        mirrorList.push(objInst)
+                    };
+
+                    mmGroup = figma.group(mirrorList, figma.currentPage);
+                    mmGroup.name = '🪞 ' + obj.name; // just adds a mirror emoji + the name of the object involved in mirroring
+
+                    if (toolObjs.length > 1) { // if more than 1 object is selected, then another parent group is needed to hold all the individual mirror groups involved in the process
+                        groupList.push(mmGroup);
+                    };
+
+                    objComp = null; // resets objComp so the componentify functions work for the next obj in toolObjs
+                    mirrorList = []; // resets mirrorList for next obj in toolObjs
                 };
-
-                mmGroup = figma.group(mirrorList, figma.currentPage);
-                mmGroup.name = '🪞 ' + obj.name;
-
-                if (toolObjs.length > 1) {
-                    groupList.push(mmGroup);
-                };
-
-                objComp = null; // resets objComp so the componentify functions work for the next obj in toolObjs
-                mirrorList = []; // resets mirrorList for next obj in toolObjs
             };
-        };
 
-        if (groupList) {
-            mmGroup = figma.group(groupList, figma.currentPage);
-            mmGroup.name = '🪞 ';
-            for (let i = 0; i < toolObjs.length; i++) {
-                let obj = toolObjs[i];
-                mmGroup.name += obj.name + ', ';   
-                
-                if (i >= 3) { // more than 3 objects selected
-                    mmGroup.name += '...';
-                }
-            };
-        };  
+            if (groupList) { // code below names the entire mirror group the names of the respective objects involved, if more than 3 objects are selected, the name just does the first 3 and adds elipses after
+                mmGroup = figma.group(groupList, figma.currentPage);
+                mmGroup.name = '🪞 ';
+                for (let i = 0; i < toolObjs.length; i++) {
+                    let obj = toolObjs[i];
+                    mmGroup.name += obj.name + ', ';   
+                    
+                    if (i >= 3) { // more than 3 objects selected
+                        mmGroup.name += '...';
+                    }
+                };
+            };  
+        }
+
+        else if (msgFor === 4) {
+
+        }
     }
 };
 

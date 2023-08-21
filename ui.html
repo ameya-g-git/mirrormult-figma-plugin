@@ -1,4 +1,20 @@
+<!-- CSS -->
+<style>
+  h3 {
+    margin: 8px 0px;
+  }
 
+  div.tool-obj {
+    display: inline-flex;
+    width: fit-content;
+    border-radius: 12px;
+    background-color: red;
+  }
+
+  div.tool-obj p {
+    margin: 8px;
+  }
+</style>
 
 <!-- HTML -->
 <button id="page-mm">MirrorMult</button>
@@ -7,6 +23,14 @@
 <section id="hidden-mm" style="display: block;">
   <h1>MirrorMult</h1>
   
+  <div class="tool-objs">
+    <h3>Objects being mirrored:</h3>
+    <div class="tool-objs-container"> 
+      <!-- this is where the object chips go -->
+    </div>   
+  </div>
+
+  <hr>
   
   <div id="direction">
     <h3>Mirror Direction</h3>
@@ -42,6 +66,15 @@
 
 <section id="hidden-rs" style="display: none;">
   <h1>RotSymm</h1>
+
+  <div class="tool-objs">
+    <h3>Objects being rotated:</h3>
+    <div class="tool-objs-container"> 
+      <!-- this is where the object chips go -->
+    </div>   
+  </div>
+
+  <hr>
   
   <div id="copies">
     <label for="num-copies">Number of Copies:</label>
@@ -69,22 +102,44 @@
 
 <!-- JS -->
 <script>
+  let toolObjs;
+
   window.onmessage = event => { // listens for change in selected object to update respective element
       const data = event.data.pluginMessage;
 
       const mirrorObjElem = document.querySelectorAll("div.origin p");
+      const toolObjsDiv = document.querySelectorAll("div.tool-objs");
 
-      const selectedObjName = data.selectedObj;
+      let selectedObjName = data.selectedObj;
+      toolObjs = data.toolObjNames;      
 
-      for (const obj of mirrorObjElem)
-        if (selectedObjName) {
-          obj.innerHTML = data.selectedObj;
+      console.log(toolObjs)
+
+      // window.onload = () => {
+        for (const obj of mirrorObjElem) {
+          if (selectedObjName) {
+            obj.innerHTML = selectedObjName;
+          }
+
+          else {
+            obj.innerHTML = "Not selected yet!"
+          };
+        };
+
+        for (const toolElem of toolObjsDiv) {
+          if (toolObjs) {
+            const toolObjsFormat = toolObjs.map(obj => `
+              <div class="tool-obj">
+                <p>${obj}</p>
+              </div>
+            `)
+
+            toolElem.innerHTML += toolObjsFormat.join('\n')
+            console.log(toolElem.innerHTML);
+          }
         }
-
-        else {
-          obj.innerHTML = "Not selected yet!"
-        };  
-  }
+      }
+  
 
   // checkbox variables
 
@@ -157,6 +212,8 @@
 
   document.getElementById('submit-rs').onclick = () => { // posts RotSymm message
     const numCopies = document.getElementById('num-copies').value;
+
+
 
   }
 </script>
