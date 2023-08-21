@@ -154,15 +154,19 @@ figma.ui.onmessage = async(pluginMessage) => {
         }
     }
     else if (msgFor === 3 || msgFor === 4) { // plugin functionality
-        const mirrorHori = pluginMessage.mirrorHori;
-        const mirrorVert = pluginMessage.mirrorVert;
         let objComp;
         let objInst;
         let origin;
         let originPosition = [0, 0];
+
+        // mirrormult specific variables
+       
         let mirrorList = []; // will hold all the reflected objects in their respective groups
         let groupList = []; // if toolObjs is greater than 1, this will hold all the group nodes to group altogether
         let mmGroup; // because figma doesnt let there be empty groups so i need a variable to hold the group
+
+        // rotsymm specific variables
+        const numCopies = pluginMessage.numCopies
 
         const cursorGroup = figma.root.findOne(node => node.type === 'GROUP' && node.name === preferredName);
 
@@ -177,8 +181,10 @@ figma.ui.onmessage = async(pluginMessage) => {
 
 
         if (msgFor === 3) { // mirrormult functionality
+            const mirrorHori = pluginMessage.mirrorHori;
+            const mirrorVert = pluginMessage.mirrorVert;
+
             for (let obj of toolObjs) {
-                console.log(obj)
                 if (mirrorHori || mirrorVert) {
                     if (mirrorHori) { // horizontal mirror
                         if (!objComp) { 
@@ -263,8 +269,22 @@ figma.ui.onmessage = async(pluginMessage) => {
             };  
         }
 
-        else if (msgFor === 4) {
+        else if (msgFor === 4) { // rotsymm functionality
+            const numCopies = pluginMessage.numCopies;
 
+            for (let obj of toolObjs) {
+                let objPosition = [obj.x + (obj.width / 2), obj.y + (obj.height / 2)]
+                let xDiff = originPosition[0] - objPosition[0];
+                let yDiff = originPosition[1] - objPosition[1];
+
+                let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff,2))
+                console.log(radius)
+
+                // function brainstorming
+                /* 
+                    for each coordinate, you need to create a trig function with a period tha
+                */
+            };
         }
     }
 };

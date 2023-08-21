@@ -91,6 +91,11 @@
     <input id="mirror-obj-rs" type="checkbox">
     <p class="empty-disclaimer">(will function the same as a regular object, but has axes for easier measurement and is deleted immediately after mirroring!)</span>
   </div>
+  
+  <div class="button">
+    <button id="submit-rs">Rotationally Symmetrize!</button>
+  </div>
+
 </section>
 
 <!-- need to work on:
@@ -122,8 +127,6 @@
         obj.innerHTML = "Not selected yet!"
       };
     };
-
-    console.log(toolObjs)
 
     for (const toolElem of toolObjsDiv) {
       if (toolObjs.length >= 1) {
@@ -214,7 +217,9 @@
   document.getElementById('submit-rs').onclick = () => { // posts RotSymm message
     const numCopies = document.getElementById('num-copies').value;
 
+    msgFor = 4;
 
-
+    parent.postMessage({pluginMessage: {msgFor, numCopies}}, '*');
+    
   }
 </script>
