@@ -105,40 +105,41 @@
   let toolObjs;
 
   window.onmessage = event => { // listens for change in selected object to update respective element
-      const data = event.data.pluginMessage;
+    const data = event.data.pluginMessage;
 
-      const mirrorObjElem = document.querySelectorAll("div.origin p");
-      const toolObjsDiv = document.querySelectorAll("div.tool-objs");
+    const mirrorObjElem = document.querySelectorAll("div.origin p");
+    const toolObjsDiv = document.querySelectorAll("div.tool-objs");
 
-      let selectedObjName = data.selectedObj;
-      toolObjs = data.toolObjNames;      
+    let selectedObjName = data.selectedObj;
+    toolObjs = data.toolObjNames;      
 
-      console.log(toolObjs)
-
-      // window.onload = () => {
-        for (const obj of mirrorObjElem) {
-          if (selectedObjName) {
-            obj.innerHTML = selectedObjName;
-          }
-
-          else {
-            obj.innerHTML = "Not selected yet!"
-          };
-        };
-
-        for (const toolElem of toolObjsDiv) {
-          if (toolObjs) {
-            const toolObjsFormat = toolObjs.map(obj => `
-              <div class="tool-obj">
-                <p>${obj}</p>
-              </div>
-            `)
-
-            toolElem.innerHTML += toolObjsFormat.join('\n')
-            console.log(toolElem.innerHTML);
-          }
-        }
+    for (const obj of mirrorObjElem) {
+      if (selectedObjName) {
+        obj.innerHTML = selectedObjName;
       }
+
+      else {
+        obj.innerHTML = "Not selected yet!"
+      };
+    };
+
+    console.log(toolObjs)
+
+    for (const toolElem of toolObjsDiv) {
+      if (toolObjs.length >= 1) {
+        const toolObjsFormat = toolObjs.map(obj => `
+          <div class="tool-obj">
+            <p>${obj}</p>
+          </div>
+        `)
+
+        toolElem.innerHTML += toolObjsFormat.join('\n')
+      }
+      else {
+        toolElem.innerHTML += 'No objects selected, make sure to select the objects you want symmetrized before running the plugin!';
+      }
+    }
+  }
   
 
   // checkbox variables
