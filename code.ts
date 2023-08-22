@@ -274,11 +274,16 @@ figma.ui.onmessage = async(pluginMessage) => {
 
             for (let obj of toolObjs) {
                 let objPosition = [obj.x + (obj.width / 2), obj.y + (obj.height / 2)]
-                let xDiff = originPosition[0] - objPosition[0];
-                let yDiff = originPosition[1] - objPosition[1];
+                let xDiff = objPosition[0] - originPosition[0];
+                let yDiff = objPosition[1] - originPosition[1];
 
                 let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff,2))
-                console.log(radius)
+                let angle = Math.acos(xDiff/radius) // returns the angle that
+
+                console.log(xDiff);
+                console.log(radius);
+            
+                console.log(angle);
 
                 // function brainstorming
                 /* 
