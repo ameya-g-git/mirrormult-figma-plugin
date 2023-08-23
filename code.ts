@@ -36,6 +36,10 @@ figma.on("selectionchange", () => { // posts the name of the selected obj
 });
 /* ----------- */
 
+function TLtoC(obj) { // will take in a Rect object (or any object with x, y, width, and height) and return its coordinates from its center, rather than from its top left corner of its bounding box
+    return ([obj.x + (obj.width / 2), obj.y + (obj.height / 2)])
+}
+
 // function below makes each toolObj's components have the same coordinates and scale as the original object
 function componentify(obj) {
     const objComp = figma.createComponent()
@@ -52,7 +56,16 @@ function componentify(obj) {
     return objComp;
 }
 /* ----------- */
+// basic trig functions to make function calls easier
 
+function sin(theta) {
+    return (Math.sin(theta));
+};
+
+function cos(theta) {
+    return (Math.cos(theta));
+};
+/* ----------- */
 
 // function below checks if cursor is on current page
 function findCursor() {
@@ -177,7 +190,7 @@ figma.ui.onmessage = async(pluginMessage) => {
             origin = figma.root.findOne(node => node.name === getSelectedObjName());
         }
         
-        originPosition = [origin.x + (origin.width / 2), origin.y + (origin.height / 2)]
+        originPosition = TLtoC(origin)
 
 
         if (msgFor === 3) { // mirrormult functionality
@@ -273,21 +286,44 @@ figma.ui.onmessage = async(pluginMessage) => {
             const numCopies = pluginMessage.numCopies;
 
             for (let obj of toolObjs) {
-                let objPosition = [obj.x + (obj.width / 2), obj.y + (obj.height / 2)]
+                const ang = Math.PI/5;
+                
+                let objPosition = TLtoC(obj);
+                obj.relativeTransform = [
+                    [cos(ang), -sin(ang), obj.x],
+                    [sin(ang), cos(ang), obj.y]
+                ];
+                let objBoxPosition = TLtoC(obj.absoluteBoundingBox); // holds the bounding box's position from its center
+                obj.x += Math.abs(objPosition[0] - objBoxPosition[0])
+                obj.y -= Math.abs(objPosition[1] - objBoxPosition[1])
+
                 let xDiff = objPosition[0] - originPosition[0];
                 let yDiff = objPosition[1] - originPosition[1];
 
                 let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff,2))
-                let angle = Math.acos(xDiff/radius) // returns the angle that
+                let angle = Math.acos(xDiff/radius) // returns the angle that the object makes with the origin as per the unit circle
+                const rotationAngle = 2 * Math.PI / numCopies;
 
-                console.log(xDiff);
-                console.log(radius);
+                // objComp = componentify(obj);
+
+                // for (let i = 1; i < numCopies; i++) {
+                //     objComp = componentify(obj);
+                //     objComp.name = obj.name;
+                    
+                // }
+
+                // this angle will let you better determint eh coordinates
+                // since you have the radius and the exact angle on the unit circle where the next instance should be, you can run a trig function, sin or cos, on both the x and y coords to designate where each instance should be
+                // rotation will be another beast to figure out
+
+                // console.log(xDiff);
+                // console.log(radius);
             
-                console.log(angle);
+                // console.log(angle);
 
                 // function brainstorming
                 /* 
-                    for each coordinate, you need to create a trig function with a period tha
+                    
                 */
             };
         }
