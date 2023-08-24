@@ -43,6 +43,7 @@ function TLtoC(obj) { // will take in a Rect object (or any object with x, y, wi
 // function below makes each toolObj's components have the same coordinates and scale as the original object
 function componentify(obj) {
     const objComp = figma.createComponent()
+    objComp.name = obj.name;
     objComp.appendChild(obj);
     objComp.x = obj.x;
     objComp.y = obj.y;
@@ -65,6 +66,8 @@ function sin(theta) {
 function cos(theta) {
     return (Math.cos(theta));
 };
+
+
 /* ----------- */
 
 // function below checks if cursor is on current page
@@ -202,7 +205,6 @@ figma.ui.onmessage = async(pluginMessage) => {
                     if (mirrorHori) { // horizontal mirror
                         if (!objComp) { 
                             objComp = componentify(obj);
-                            objComp.name = obj.name;
                             mirrorList.push(objComp)
                         };
                         objInst = objComp.createInstance();
@@ -221,7 +223,6 @@ figma.ui.onmessage = async(pluginMessage) => {
                     if (mirrorVert) { // vertical mirror
                         if (!objComp) { 
                             objComp = componentify(obj);
-                            objComp.name = obj.name;
                             mirrorList.push(objComp)
                         };
                         
@@ -241,7 +242,6 @@ figma.ui.onmessage = async(pluginMessage) => {
                     if (mirrorHori && mirrorVert) { // if both are selected, there's gonna need to be one more reflected object at the remaining corner
                         if (!objComp) { // unnecessary conditional, but to reduce errors im just gonna keep it lol
                             objComp = componentify(obj);
-                            objComp.name = obj.name;
                         };
                         objInst = objComp.createInstance();
                         
@@ -286,16 +286,10 @@ figma.ui.onmessage = async(pluginMessage) => {
             const numCopies = pluginMessage.numCopies;
 
             for (let obj of toolObjs) {
-                const ang = Math.PI/5;
+                // const ang = Math.PI/5;
                 
                 let objPosition = TLtoC(obj);
-                obj.relativeTransform = [
-                    [cos(ang), -sin(ang), obj.x],
-                    [sin(ang), cos(ang), obj.y]
-                ];
-                let objBoxPosition = TLtoC(obj.absoluteBoundingBox); // holds the bounding box's position from its center
-                obj.x += Math.abs(objPosition[0] - objBoxPosition[0])
-                obj.y -= Math.abs(objPosition[1] - objBoxPosition[1])
+                
 
                 let xDiff = objPosition[0] - originPosition[0];
                 let yDiff = objPosition[1] - originPosition[1];
@@ -304,14 +298,28 @@ figma.ui.onmessage = async(pluginMessage) => {
                 let angle = Math.acos(xDiff/radius) // returns the angle that the object makes with the origin as per the unit circle
                 const rotationAngle = 2 * Math.PI / numCopies;
 
-                // objComp = componentify(obj);
+                objComp = componentify(obj);
 
-                // for (let i = 1; i < numCopies; i++) {
-                //     objComp = componentify(obj);
-                //     objComp.name = obj.name;
-                    
-                // }
 
+
+                for (let i = 1; i < numCopies; i++) {
+                    angle -= rotationAngle; // will hold the angle that the instance will be at on the unit circle
+                    let objAngle = rotationAngle * i;
+                    objInst = objComp.createInstance();
+                    objInst.x = originPosition[0] + (cos(angle) * radius); // cursor position is the base position, x position varies based on unit circle (sin is vertical pos, cos is horizontal)
+                    objInst.y = originPosition[1] - (sin(angle) * radius);
+                    let objInstPosition = TLtoC(objInst);
+
+                    objInst.relativeTransform = [
+                        [cos(objAngle), -sin(objAngle), objInst.x],
+                        [sin(objAngle), cos(objAngle), objInst.y]
+                    ];
+                    let objBoxPosition = TLtoC(objInst.absoluteBoundingBox); // holds the bounding box's position from its center
+                    objInst.x += Math.abs(objInstPosition[0] - objBoxPosition[0])
+                    objInst.y -= Math.abs(objInstPosition[1] - objBoxPosition[1])
+                }
+
+                // code is almost complete, maybe try working on only one instance first before all of them, makes it easier to understand
                 // this angle will let you better determint eh coordinates
                 // since you have the radius and the exact angle on the unit circle where the next instance should be, you can run a trig function, sin or cos, on both the x and y coords to designate where each instance should be
                 // rotation will be another beast to figure out
