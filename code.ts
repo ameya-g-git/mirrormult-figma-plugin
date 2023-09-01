@@ -4,11 +4,26 @@ figma.showUI(__html__);
 figma.ui.resize(400, 500);
 
 const toolObjs = [figma.currentPage.selection][0]; // saves the objects for the plugin to mirror in a separate list for later
+let tempToolObjs = toolObjs; // holds toolObjs in a temp list to be used for parent testing
+
+function properParent(obj) {
+    let objParent = obj.parent;
+    if (objParent.type === 'PAGE') {
+        objParent = figma.currentPage;
+    }
+    else if (objParent.type != 'FRAME') {
+        objParent = properParent(objParent) // will keep going up hierarchies until either a page or a frame is reached
+    }
+
+    return objParent
+}
+
+let goodParent = properParent(toolObjs[0]); // will hold the parent that all objects created via the plugin will be placed into
 
 const toolObjNames = toolObjs.map(obj => obj.name); // maps items from a defined list and allows you to create a new list by taking properties of each item from that predefined list, woa!!!
 figma.ui.postMessage({toolObjNames});
 
-let cursorPosition = [0]; // see if this works lol
+let cursorPosition = []; // see if this works lol
 let cursorGroup; // so that cursorGroup has a type, allowing it to work as a condition within the msgFor === 2 statement
 const preferredName = '🪞/🔅 Cursor'; // holds the name of the cursor
 
@@ -40,8 +55,11 @@ function TLtoC(obj) { // will take in a Rect object (or any object with x, y, wi
     return ([obj.x + (obj.width / 2), obj.y + (obj.height / 2)])
 }
 
+// function getRelCoords(obj) {
+//     return [obj.relativeTransform[0][2], obj.relativeTransform[1][2]];
+// }
+
 function rotateFromCenter(obj, angle) {
-    
     return [
         [cos(angle), -sin(angle), obj.x], // TODO: rotation for RotSymm needs to be fixed, since the object won't necessarily be rotated by increments of a 
         [sin(angle), cos(angle), obj.y]
@@ -51,24 +69,25 @@ function rotateFromCenter(obj, angle) {
 // function below makes each toolObj's components have the same coordinates and scale as the original object
 function componentify(obj) {
     const objComp = figma.createComponent()
-    const objAngle = obj.rotation;
-    objComp.name = obj.name;
     objComp.appendChild(obj);
+    goodParent.appendChild(objComp)
+    objComp.name = obj.name;
     objComp.x = obj.x;
     objComp.y = obj.y;
-    objComp.resize(obj.width, obj.height); // nEED TO CONVERT ALL CODE TO WORK WITH RELATIVE TRANSFORMS INSTEAD OF GLOBAL TRANSFORM :SOB:
+    //objComp.resize(obj.width, obj.height); // nEED TO CONVERT ALL CODE TO WORK WITH RELATIVE TRANSFORMS INSTEAD OF GLOBAL TRANSFORM :SOB:
+    objComp.resizeWithoutConstraints(obj.width, obj.height)
 
     obj.relativeTransform = [ // places the source obj (from toolObjs) directly at where the component frame is
-        [1, 0, 0],
+        [0.5, 0, 0],
         [0, 1, 0] // STILL NEED TO FIGURE OUT HOW THE DAMN ROTATION WORK
     ];
 
-    objComp.relativeTransform = [
-        [cos(objAngle), -sin(objAngle), objComp.x],
-        [sin(objAngle), cos(objAngle), objComp.y]
-    ];
+    // objComp.relativeTransform = [
+    //     [cos(objAngle), -sin(objAngle), objComp.x],
+    //     [sin(objAngle), cos(objAngle), objComp.y]
+    // ];
 
-    let objBoxPosition = TLtoC(objComp.absoluteBoundingBox)
+    
     
     return objComp;
 }
@@ -100,7 +119,7 @@ figma.ui.onmessage = async(pluginMessage) => {
         const zoom = figma.viewport.zoom;
         const center = figma.viewport.center
         const size = 36; // holds a base size for the cursor at 100% zoom
-        const sizeAdjusted = size / zoom; // keeps the cursor the same visual size no matter the zoom
+        const sizeAdjusted = Math.round(size / zoom); // keeps the cursor the same visual size no matter the zoom
 
         const pinkCircle = figma.createEllipse(); // pink half of the ring
         pinkCircle.x = center.x;
@@ -135,7 +154,11 @@ figma.ui.onmessage = async(pluginMessage) => {
         yellCircle.strokeCap = 'ROUND';
         yellCircle.strokeAlign = 'CENTER';
 
-        cursorGroup = figma.group([ring, yellCircle], figma.currentPage); // initializes the group for the cursor's objects
+        cursorGroup = figma.group([ring, yellCircle], goodParent); // initializes the group for the cursor's objects
+
+        // consider making a component of all the toolObjs so that you only need to move instances to their respective place, not each objects instances
+        // i still need to change everything to relative coordinates 
+        // also i could just use the object from the option where you dont use the cursor to decide where the instances should go, should be easy enough
 
         for (let i = 0; i < 4; i++) { // axis generation
             const axisLine = figma.createLine();
@@ -186,10 +209,9 @@ figma.ui.onmessage = async(pluginMessage) => {
         }
     }
     else if (msgFor === 3 || msgFor === 4) { // plugin functionality
-        let objComp;
+        let compGroup;
         let objInst;
         let origin;
-        let originPosition = [0, 0];
 
         // mirrormult specific variables
        
@@ -203,124 +225,102 @@ figma.ui.onmessage = async(pluginMessage) => {
         const cursorGroup = figma.root.findOne(node => node.type === 'GROUP' && node.name === preferredName);
 
         if (cursorGroup) {
-            let cursorRelCoord = [cursorGroup.relativeTransform[0][2], cursorGroup.relativeTransform[1][2]];
-            originPosition = [cursorRelCoord[0] + (cursorGroup.width / 2), cursorRelCoord[1] + (cursorGroup.height / 2)];
+            origin = cursorGroup;
         }
         else {
             origin = figma.root.findOne(node => node.name === getSelectedObjName());
-            originPosition = TLtoC(origin)
         }        
+
+        let originPosition = TLtoC(origin);
 
 
         if (msgFor === 3) { // mirrormult functionality
             const mirrorHori = pluginMessage.mirrorHori;
             const mirrorVert = pluginMessage.mirrorVert;
 
-            // TODO: potential error when objects are rotated in MirrorMult, need to adjust matrices to fix this
+            const toolGroup = figma.group(toolObjs, goodParent);
+            toolGroup.name = 'Source Group';
+            const compGroup = componentify(toolGroup);
+            compGroup.name = 'Source Component';
+            
+            mirrorList.push(compGroup);
 
-            let parentTest = true; // holds true until one of the objects in toolObjs no longer shares the same parent as the rest
-            let firstParent = toolObjs[0].parent;
-
-            for (let obj of toolObjs) {
-                console.log(obj.parent)
-                if (obj.parent != firstParent) {
-                    parentTest = false;
-                    break;
-                }
-            }
-
-            for (let obj of toolObjs) {
-                let objAngle = obj.rotation;
-                let objParent = obj.parent;
-                let objRelX = obj.relativeTransform[0][2]; // holds the obj's relative x-coord to its parent
-                let objRelY = obj.relativeTransform[1][2]; // holds the obj's relative x-coord to its parent
-
-                console.log(objRelX, objRelY)
-
-                if (mirrorHori || mirrorVert) {
-                    if (mirrorHori) { // horizontal mirror
-                        if (!objComp) { 
-                            objComp = componentify(obj);
-                            mirrorList.push(objComp)
-                        };
-                        objInst = objComp.createInstance();
-                        objParent.appendChild(objInst)
-                        
-                        objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are horizontally reflected across the origin
-                            [-1, 0, objRelX + ((-2) * (objRelY - originPosition[0]))],
-                            [0, 1, objRelY] 
-                        ];
-                        //objInst.relativeTransform = rotateFromCenter(objInst, objAngle)
-
-                        objInst.name = objComp.name + '-H'
-                        mirrorList.push(objInst)
-                    };
+            if (mirrorHori || mirrorVert) {
+                if (mirrorHori) { // horizontal mirror
+                    objInst = compGroup.createInstance();
+                    goodParent.appendChild(objInst);
                     
-                    if (mirrorVert) { // vertical mirror
-                        if (!objComp) { 
-                            objComp = componentify(obj);
-                            mirrorList.push(objComp)
-                        };
-                        
-                        objInst = objComp.createInstance();
-                        
-                        objInst.x = objComp.x;
-                        objInst.y = objComp.y + (-2) * (objComp.y - originPosition[1]); // same calculations but for y coord
-                        objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are vertically reflected across the origin
-                            [1, 0, objRelX],
-                            [0, -1, objInst.y] 
-                        ];
-                        
-                        objInst.name = objComp.name + '-V'
-                        mirrorList.push(objInst)
-                    };
+                    objInst.x = compGroup.x + (-2) * (compGroup.x - originPosition[0]);
+                    objInst.y = compGroup.y;
+                    objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are horizontally reflected across the origin
+                        [-1, 0, objInst.x],
+                        [0, 1, objInst.y] 
+                    ];
 
-                    if (mirrorHori && mirrorVert) { // if both are selected, there's gonna need to be one more reflected object at the remaining corner
-                        if (!objComp) { // unnecessary conditional, but to reduce errors im just gonna keep it lol
-                            objComp = componentify(obj);
-                        };
-                        objInst = objComp.createInstance();
-                        
-                        objInst.x = objComp.x + (-2) * (objComp.x - originPosition[0]); // calculations but for both x and y!!!!!
-                        objInst.y = objComp.y + (-2) * (objComp.y - originPosition[1]);
-                        objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are diagonally reflected across the origin
-                            [-1, 0, objRelX],
-                            [0, -1, objInst.y]
-                        ];
-                        
-                        objInst.name = objComp.name + '-HV'
-                        mirrorList.push(objInst)
-                    };
+                    //objInst.relativeTransform = rotateFromCenter(objInst, objAngle)
 
-                    mmGroup = figma.group(mirrorList, firstParent);
-                    mmGroup.name = '🪞 ' + obj.name; // just adds a mirror emoji + the name of the object involved in mirroring
-
-                    if (toolObjs.length > 1) { // if more than 1 object is selected, then another parent group is needed to hold all the individual mirror groups involved in the process
-                        groupList.push(mmGroup);
-                    };
-
-                    objComp = null; // resets objComp so the componentify functions work for the next obj in toolObjs
-                    mirrorList = []; // resets mirrorList for next obj in toolObjs
+                    objInst.name = 'Reflection-H';
+                    mirrorList.push(objInst);
                 };
-            };
-
-            if (groupList) { // code below names the entire mirror group the names of the respective objects involved, if more than 3 objects are selected, the name just does the first 3 and adds elipses after
-                if (parentTest) {
-                    mmGroup = figma.group(groupList, firstParent);
-                }
-                else {
-                    mmGroup = figma.group(groupList, figma.currentPage);
-                }
-                mmGroup.name = '🪞 ';
-                for (let i = 0; i < toolObjs.length; i++) {
-                    let obj = toolObjs[i];
-                    mmGroup.name += obj.name + ', ';   
+                
+                if (mirrorVert) { // vertical mirror
+                    objInst = compGroup.createInstance();
+                    goodParent.appendChild(objInst);
+                                            
+                    objInst.x = compGroup.x;
+                    objInst.y = compGroup.y + (-2) * (compGroup.y - originPosition[1]); // same calculations but for y coord
+                    objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are vertically reflected across the origin
+                        [1, 0, objInst.x],
+                        [0, -1, objInst.y] 
+                    ];
                     
-                    if (i >= 3) { // more than 3 objects selected
-                        mmGroup.name += '...';
+                    objInst.name = 'Reflection-V'
+                    mirrorList.push(objInst)
+                };
+
+                if (mirrorHori && mirrorVert) { // if both are selected, there's gonna need to be one more reflected object at the remaining corner
+                    if (!compGroup) { // unnecessary conditional, but to reduce errors im just gonna keep it lol
+                        compGroup = componentify(obj);
+                    };
+                    objInst = compGroup.createInstance();
+                    
+                    objInst.x = compGroup.x + (-2) * (compGroup.x - originPosition[0]); // calculations but for both x and y!!!!!
+                    objInst.y = compGroup.y + (-2) * (compGroup.y - originPosition[1]);
+                    objInst.relativeTransform = [ // relative transform so that the instance is reflected, so that any adjustments to the source obj are diagonally reflected across the origin
+                        [-1, 0, objInst.x],
+                        [0, -1, objInst.y]
+                    ];
+                    
+                    objInst.name = 'Reflection-HV'
+                    mirrorList.push(objInst)
+                };
+
+                mmGroup = figma.group(mirrorList, goodParent);
+                mmGroup.name = '🪞 '; // just adds a mirror emoji + the name of the object involved in mirroring
+
+                for (let i = 0; i < toolGroup.children.length; i++) {
+                    let obj = toolGroup.children[i];
+                    let name = mmGroup.name
+                    if (i < 3) {
+                        name += obj.name + ', ';
                     }
+                    else {
+                        name = mmGroup.name.substring(0, mmGroup.name.length - 2) // removes the comma at the end
+                        name += '...'
+                        break
+                    }
+
+                    if (name[name.length - 1] === ',') {
+                        name = name.substring(0, name.length - 2);
+                    }
+                }
+
+                if (toolObjs.length > 1) { // if more than 1 object is selected, then another parent group is needed to hold all the individual mirror groups involved in the process
+                    groupList.push(mmGroup);
                 };
-            };  
+                
+                
+            };
         }
 
         else if (msgFor === 4) { // rotsymm functionality
@@ -340,7 +340,7 @@ figma.ui.onmessage = async(pluginMessage) => {
                 console.log(angle)
                 const rotationAngle = 2 * Math.PI / numCopies;
 
-                objComp = componentify(obj);
+                compGroup = componentify(obj);
                 let objAngle // = objComp.rotation
 
                 // TODO: same rotation problem from MirrorMult but for Rotsymm, fix this kid
@@ -355,7 +355,7 @@ figma.ui.onmessage = async(pluginMessage) => {
                     // console.log(objComp.x, objComp.y)
                     console.log(cos(angle) * radius, sin(angle) * radius)
                     
-                    objInst = objComp.createInstance();
+                    objInst = compGroup.createInstance();
                     objInst.x = originPosition[0] + (cos(angle) * radius); // cursor position is the base position, x position varies based on unit circle (sin is vertical pos, cos is horizontal)
                     objInst.y = originPosition[1] - (sin(angle) * radius);
                     // console.log(objInst.x, objInst.y);
