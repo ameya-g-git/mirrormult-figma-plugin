@@ -78,7 +78,7 @@ function componentify(obj) {
     objComp.resizeWithoutConstraints(obj.width, obj.height)
 
     obj.relativeTransform = [ // places the source obj (from toolObjs) directly at where the component frame is
-        [0.5, 0, 0],
+        [1, 0, 0],
         [0, 1, 0] // STILL NEED TO FIGURE OUT HOW THE DAMN ROTATION WORK
     ];
 
@@ -233,15 +233,15 @@ figma.ui.onmessage = async(pluginMessage) => {
 
         let originPosition = TLtoC(origin);
 
+        const toolGroup = figma.group(toolObjs, goodParent);
+        toolGroup.name = 'Source Group';
+        compGroup = componentify(toolGroup);
+        compGroup.name = 'Source Component';
+
 
         if (msgFor === 3) { // mirrormult functionality
             const mirrorHori = pluginMessage.mirrorHori;
-            const mirrorVert = pluginMessage.mirrorVert;
-
-            const toolGroup = figma.group(toolObjs, goodParent);
-            toolGroup.name = 'Source Group';
-            const compGroup = componentify(toolGroup);
-            compGroup.name = 'Source Component';
+            const mirrorVert = pluginMessage.mirrorVert;            
             
             mirrorList.push(compGroup);
 
@@ -279,10 +279,8 @@ figma.ui.onmessage = async(pluginMessage) => {
                 };
 
                 if (mirrorHori && mirrorVert) { // if both are selected, there's gonna need to be one more reflected object at the remaining corner
-                    if (!compGroup) { // unnecessary conditional, but to reduce errors im just gonna keep it lol
-                        compGroup = componentify(obj);
-                    };
                     objInst = compGroup.createInstance();
+                    goodParent.appendChild(objInst);
                     
                     objInst.x = compGroup.x + (-2) * (compGroup.x - originPosition[0]); // calculations but for both x and y!!!!!
                     objInst.y = compGroup.y + (-2) * (compGroup.y - originPosition[1]);
@@ -326,52 +324,48 @@ figma.ui.onmessage = async(pluginMessage) => {
         else if (msgFor === 4) { // rotsymm functionality
             const numCopies = pluginMessage.numCopies;
 
-            for (let obj of toolObjs) {                
-                let objPosition = TLtoC(obj);
+            let objPosition = TLtoC(compGroup);
 
-                let xDiff = objPosition[0] - originPosition[0];
-                let yDiff = objPosition[1] - originPosition[1];
-                console.log(xDiff, yDiff)
+            let xDiff = objPosition[0] - originPosition[0];
+            let yDiff = objPosition[1] - originPosition[1];
+            console.log(xDiff, yDiff)
 
-                console.log(originPosition)
+            console.log(originPosition)
 
-                let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff,2))
-                let angle = Math.acos(xDiff/radius) // returns the angle that the object makes with the origin as per the unit circle
-                console.log(angle)
-                const rotationAngle = 2 * Math.PI / numCopies;
+            let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff,2))
+            let angle = Math.acos(xDiff/radius) // returns the angle that the object makes with the origin as per the unit circle
+            const rotationAngle = 2 * Math.PI / numCopies;
+            const rotationAngleDeg = rotationAngle * 180 / Math.PI;
 
-                compGroup = componentify(obj);
-                let objAngle // = objComp.rotation
+            console.log(cos(angle), sin(angle))
 
-                // TODO: same rotation problem from MirrorMult but for Rotsymm, fix this kid
-                // componentify function needs to be adjusted since relativeTransform should not bring it back to default rotation
+            // TODO: same rotation problem from MirrorMult but for Rotsymm, fix this kid
+            // componentify function needs to be adjusted since relativeTransform should not bring it back to default rotation
 
-                for (let i = 1; i < numCopies; i++) {
-                    angle += rotationAngle; // will hold the angle that the instance will be at on the unit circle
-                    objAngle = -rotationAngle * i;
+            for (let i = 1; i < numCopies; i++) {
+                console.log(angle);
+                angle += rotationAngle; // will hold the angle that the instance will be at on the unit circle
+                let objAngle = - rotationAngle * i;
+                let objAngleDeg = rotationAngleDeg * i; // for naming the respective components
+                
+                objInst = compGroup.createInstance();
+                objInst.x = originPosition[0] + (cos(angle) * radius); // cursor position is the base position, x position varies based on unit circle (sin is vertical pos, cos is horizontal)
+                objInst.y = originPosition[1] - (sin(angle) * radius);
+                objInst.name = 'Rotation ' + objAngleDeg + '°';
+                // console.log(objInst.x, objInst.y);
+                let objInstPosition = TLtoC(objInst);
 
-                    console.log(angle)
-                    console.log(cos(angle), sin(angle))
-                    // console.log(objComp.x, objComp.y)
-                    console.log(cos(angle) * radius, sin(angle) * radius)
-                    
-                    objInst = compGroup.createInstance();
-                    objInst.x = originPosition[0] + (cos(angle) * radius); // cursor position is the base position, x position varies based on unit circle (sin is vertical pos, cos is horizontal)
-                    objInst.y = originPosition[1] - (sin(angle) * radius);
-                    // console.log(objInst.x, objInst.y);
-                    let objInstPosition = TLtoC(objInst);
+                objInst.relativeTransform = [
+                    [cos(objAngle), -sin(objAngle), objInst.x], // TODO: rotation for RotSymm needs to be fixed, since the object won't necessarily be rotated by increments of a 
+                    [sin(objAngle), cos(objAngle), objInst.y]
+                ];
+                let objBoxPosition = TLtoC(objInst.absoluteBoundingBox); // holds the bounding box's position from its center
+                
+                // objInst.x += (objInstPosition[0] - objBoxPosition[0])/2
+                // objInst.y += (objInstPosition[1] - objBoxPosition[1])/2
+                
 
-                    objInst.relativeTransform = [
-                        [cos(objAngle), -sin(objAngle), objInst.x], // TODO: rotation for RotSymm needs to be fixed, since the object won't necessarily be rotated by increments of a 
-                        [sin(objAngle), cos(objAngle), objInst.y]
-                    ];
-                    let objBoxPosition = TLtoC(objInst.absoluteBoundingBox); // holds the bounding box's position from its center
-                    
-                    objInst.x += (objInstPosition[0] - objBoxPosition[0])
-                    objInst.y += (objInstPosition[1] - objBoxPosition[1])
-                    
-
-                }
+            }
 
                 // code is almost complete, maybe try working on only one instance first before all of them, makes it easier to understand
                 // this angle will let you better determint eh coordinates
@@ -387,7 +381,7 @@ figma.ui.onmessage = async(pluginMessage) => {
                 /* 
                     
                 */
-            };
+            
         }
     }
 };
