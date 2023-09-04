@@ -11,7 +11,7 @@ function properParent(obj) {
     if (objParent.type === 'PAGE') {
         objParent = figma.currentPage;
     }
-    else if (objParent.type != 'FRAME') {
+    else if (objParent.type != 'FRAME' || objParent.type != 'SECTION') { // TODO: fix what happens if its in a section
         objParent = properParent(objParent) // will keep going up hierarchies until either a page or a frame is reached
     }
 
@@ -94,12 +94,12 @@ function componentify(obj) {
 /* ----------- */
 // basic trig functions to make function calls easier
 
-function sin(theta) {
-    return (Math.sin(theta));
+function sin(objAngle) {
+    return (Math.sin(objAngle));
 };
 
-function cos(theta) {
-    return (Math.cos(theta));
+function cos(objAngle) {
+    return (Math.cos(objAngle));
 };
 
 
@@ -257,8 +257,6 @@ figma.ui.onmessage = async(pluginMessage) => {
                         [0, 1, objInst.y] 
                     ];
 
-                    //objInst.relativeTransform = rotateFromCenter(objInst, objAngle)
-
                     objInst.name = 'Reflection-H';
                     mirrorList.push(objInst);
                 };
@@ -317,71 +315,74 @@ figma.ui.onmessage = async(pluginMessage) => {
                     groupList.push(mmGroup);
                 };
                 
+                // TODO: fix indexing, objects should be placed at proper layer
                 
             };
         }
 
         else if (msgFor === 4) { // rotsymm functionality
+            let compBottom = compGroup.y + compGroup.height
             const numCopies = pluginMessage.numCopies;
 
             let objPosition = TLtoC(compGroup);
 
             let xDiff = objPosition[0] - originPosition[0];
             let yDiff = objPosition[1] - originPosition[1];
-            console.log(xDiff, yDiff)
 
             console.log(originPosition)
+            console.log(compGroup.y)
 
             let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff,2))
             let angle = Math.acos(xDiff/radius) // returns the angle that the object makes with the origin as per the unit circle
+
+            if (Math.round(originPosition[1]) <= Math.round(compGroup.y)) { // angle measured is always below pi, despite that not being the case all the time. to fix this, i just check for if the cursor is above the compGroup
+                angle = -angle
+            }
+        
             const rotationAngle = 2 * Math.PI / numCopies;
             const rotationAngleDeg = rotationAngle * 180 / Math.PI;
 
+            console.log(angle)
+            console.log(sin(angle), cos(angle))
+
             console.log(cos(angle), sin(angle))
 
-            // TODO: same rotation problem from MirrorMult but for Rotsymm, fix this kid
-            // componentify function needs to be adjusted since relativeTransform should not bring it back to default rotation
-
             for (let i = 1; i < numCopies; i++) {
-                console.log(angle);
                 angle += rotationAngle; // will hold the angle that the instance will be at on the unit circle
                 let objAngle = - rotationAngle * i;
                 let objAngleDeg = rotationAngleDeg * i; // for naming the respective components
                 
                 objInst = compGroup.createInstance();
-                objInst.x = originPosition[0] + (cos(angle) * radius); // cursor position is the base position, x position varies based on unit circle (sin is vertical pos, cos is horizontal)
+                objInst.x = originPosition[0] + (cos(angle) * radius); // cursor position is the base position, x position varies based on unit circle (sin is vertical, cos is horizontal)
                 objInst.y = originPosition[1] - (sin(angle) * radius);
-                objInst.name = 'Rotation ' + objAngleDeg + '°';
+                
+                objInst.name = 'Rotation ' + objAngleDeg + '°'; 
                 // console.log(objInst.x, objInst.y);
                 let objInstPosition = TLtoC(objInst);
 
+                let cosAngle = cos(objAngle) // so the computer doesnt have to calculate it over and over :D
+                let sinAngle = sin(objAngle)
+
+                console.log(angle)
+                console.log(sinAngle, cosAngle)
+
                 objInst.relativeTransform = [
-                    [cos(objAngle), -sin(objAngle), objInst.x], // TODO: rotation for RotSymm needs to be fixed, since the object won't necessarily be rotated by increments of a 
-                    [sin(objAngle), cos(objAngle), objInst.y]
+                    [cosAngle, -sinAngle, objInst.x], 
+                    [sinAngle, cosAngle, objInst.x]
                 ];
                 let objBoxPosition = TLtoC(objInst.absoluteBoundingBox); // holds the bounding box's position from its center
                 
-                // objInst.x += (objInstPosition[0] - objBoxPosition[0])/2
-                // objInst.y += (objInstPosition[1] - objBoxPosition[1])/2
-                
+                objInst.x += (objInstPosition[0] - objBoxPosition[0]) - objInst.width/2
+                objInst.y += (objInstPosition[1] - objBoxPosition[1]) - objInst.height/2
 
-            }
+                if (originPosition[1] > compGroup.y && originPosition[1] < compBottom && originPosition[0] < compGroup.x) {
+                    objInst.y -= objInst.height/2; // TODO: for some reason, placing the cursor in Q1 fucks it all up, IDK why
+                }
+            } 
+            // TODO: fix indexing, objects should be placed at proper layer
+            // TODO: put all these mfs into a group
 
-                // code is almost complete, maybe try working on only one instance first before all of them, makes it easier to understand
-                // this angle will let you better determint eh coordinates
-                // since you have the radius and the exact angle on the unit circle where the next instance should be, you can run a trig function, sin or cos, on both the x and y coords to designate where each instance should be
-                // rotation will be another beast to figure out
 
-                // console.log(xDiff);
-                // console.log(radius);
-            
-                // console.log(angle);
-
-                // function brainstorming
-                /* 
-                    
-                */
-            
         }
     }
 };
