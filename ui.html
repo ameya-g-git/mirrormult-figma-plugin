@@ -1,7 +1,21 @@
 <!-- CSS -->
 <style>
+  body {
+    background-color: #242325;
+  } 
+
   h3 {
     margin: 8px 0px;
+  }
+
+  button.section {
+    color: red;
+    cursor: pointer;
+    
+  }
+
+  button.section.active {
+
   }
 
   div.tool-obj {
@@ -17,8 +31,8 @@
 </style>
 
 <!-- HTML -->
-<button id="page-mm">MirrorMult</button>
-<button id="page-rs">RotSymm</button>
+<button class="section" id="page-mm">MirrorMult</button>
+<button class="section" id="page-rs">RotSymm</button>
 
 <section id="hidden-mm" style="display: block;">
   <h1>MirrorMult</h1>
@@ -165,6 +179,10 @@
     sectionRS.style.display = 'none';
 
     checkboxRS.checked = false;
+
+    buttonMM.classList.add('active') // for the css
+    buttonRS.classList.remove('active')
+
     msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
     parent.postMessage({pluginMessage: {msgFor}}, '*');
   });
@@ -175,6 +193,9 @@
 
     checkboxMM.checked = false;
     
+    buttonRS.classList.add('active') // for the css
+    buttonMM.classList.remove('active')
+
     msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
     parent.postMessage({pluginMessage: {msgFor}}, '*');
   });
