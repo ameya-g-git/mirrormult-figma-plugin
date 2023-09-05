@@ -8,15 +8,36 @@
     margin: 8px 0px;
   }
 
-  button.section {
-    color: red;
-    cursor: pointer;
-    
+  div.tab {
+    top: 0px;
+    left: 0px;
+    display: inline;
   }
 
-  button.section.active {
-
+  div.tab svg {
+    width: 135px;
+    height: 33.75px;
+    margin-right: -30px;
+    top: 0px; 
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
   }
+
+  div.tab svg path{
+    fill: blue;
+  }
+
+  div.tab svg text {
+    fill: red;
+  }
+
+  div.tab svg path, div.tab svg text {
+    position: absolute;
+    transform-origin: center;
+}
+
+  /* toolobj chips */
 
   div.tool-obj {
     display: inline-flex;
@@ -31,8 +52,21 @@
 </style>
 
 <!-- HTML -->
-<button class="section" id="page-mm">MirrorMult</button>
-<button class="section" id="page-rs">RotSymm</button>
+<div class="tab active" id="tab-mm">
+  <svg width="180" height="45" viewBox="0 0 180 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M24.7226 12.0095L0 45H180L155.277 12.0095C149.612 4.44972 140.717 0 131.27 0H48.7297C39.2828 0 30.3878 4.44972 24.7226 12.0095Z" fill="#242325"/>
+    <text x="0" y="15" fill="red">MirrorMult</text>
+  </svg>
+  <!-- <h1 id="page-mm">MirrorMult</h1> -->
+</div>
+
+<div class="tab" id="tab-rs">
+  <svg width="180" height="45" viewBox="0 0 180 45" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M24.7226 12.0095L0 45H180L155.277 12.0095C149.612 4.44972 140.717 0 131.27 0H48.7297C39.2828 0 30.3878 4.44972 24.7226 12.0095Z" fill="#242325"/>
+  </svg>
+    
+  <!-- <button id="page-rs">RotSymm</button> -->
+<div>
 
 <section id="hidden-mm" style="display: block;">
   <h1>MirrorMult</h1>
@@ -168,33 +202,36 @@
 
   // separate menu functionality
 
-  const buttonMM = document.getElementById("page-mm");
-  const buttonRS = document.getElementById("page-rs");
+  // const buttonMM = document.getElementById("page-mm");
+  // const buttonRS = document.getElementById("page-rs");
 
   const sectionMM = document.getElementById("hidden-mm");
   const sectionRS = document.getElementById("hidden-rs");
+
+  const tabMM = document.getElementById('tab-mm')
+  const tabRS = document.getElementById('tab-rs')
   
-  buttonMM.addEventListener('click', function() { // allows for the MirrorMult button to take user to the MirrorMult Menu, with its specific inputs
+  tabMM.addEventListener('click', function() { // allows for the MirrorMult button to take user to the MirrorMult Menu, with its specific inputs
     sectionMM.style.display = 'block';
     sectionRS.style.display = 'none';
 
     checkboxRS.checked = false;
 
-    buttonMM.classList.add('active') // for the css
-    buttonRS.classList.remove('active')
+    tabMM.classList.add('active') // for the css
+    tabRS.classList.remove('active')
 
     msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
     parent.postMessage({pluginMessage: {msgFor}}, '*');
   });
 
-  buttonRS.addEventListener('click', function() { // allows for the RotSymm button to take user to the Rotsymm Menu, with its specific inputs
+  tabRS.addEventListener('click', function() { // allows for the RotSymm button to take user to the Rotsymm Menu, with its specific inputs
     sectionRS.style.display = 'block';
     sectionMM.style.display = 'none';
 
     checkboxMM.checked = false;
     
-    buttonRS.classList.add('active') // for the css
-    buttonMM.classList.remove('active')
+    tabRS.classList.add('active') // for the css
+    tabMM.classList.remove('active')
 
     msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
     parent.postMessage({pluginMessage: {msgFor}}, '*');
