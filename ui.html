@@ -1,37 +1,86 @@
 <!-- CSS -->
 <style>
-  body {
-    background-color: #242325;
-  } 
-
-  * {
-    font-family: 'Futura';
-    color: black;
+  :root {
+    --pink: #FF3FBE;
+    --yellow: #FFB800;
+    --purple: #C60BFF;
+    --bg: #242325;
+    --bg-dark: #1F1F21;
+    --grad: linear-gradient( 90deg,
+      var(--pink), 0%,
+      var(--purple), 50%,
+      var(--yellow), 100%
+      );
   }
 
-  h3 {
-    margin: 8px 0px;
+  body {
+    background-color: var(--bg-dark);
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+  } 
+
+  
+  * {
+    font-family: 'Futura';
+    color: white;
+  }
+
+  button, input {
+    background-color: black;
+  }
+
+/* MAKES IT EASY TO SEE HOW ELEMENTS ARE NESTED, UNCOMMENT IF NEEDED */
+
+  /* * { outline: 2px dotted red }
+* * { outline: 2px dotted green }
+* * * { outline: 2px dotted orange; }
+* * * * { outline: 2px dotted blue }
+* * * * * { outline: 1px solid red }
+* * * * * * { outline: 1px solid green }
+* * * * * * * { outline: 1px solid orange }
+* * * * * * * * { outline: 1px solid blue } */
+
+  h1 {
+    margin: 10px 0px;
   }
 
   div.tab {
     position: relative;
-    display: inline;
+    display: inline-block;
     z-index: 1;
     filter: brightness(80%);
+    margin: 0px -5vh 0px 5px;
+    top: 6vh;
+    cursor: pointer;
+  }
+
+  div.tab:hover {
+    filter: brightness(1);
   }
 
   div.tab svg {
-    width: 180px;
-    height: 35px;
-    margin-left: -30px;
-    margin-right: -60px;
-    top: 0px; 
+    width: auto;
+    height: 5vh;
+    
   }
 
   div.tab.active {
-    z-index: 100;
+    z-index: 2;
     filter: brightness(1);
   }
+
+  section {
+    position: fixed;
+    top: 10vh;
+    background-color: var(--bg);
+    border-top: 7px solid red;
+    padding-bottom: 100vh;
+    padding-top: 1em;
+    margin: 0px;
+
+  }
+
 
   /* toolobj chips */
 
