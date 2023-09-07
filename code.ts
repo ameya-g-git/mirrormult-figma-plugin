@@ -8,17 +8,21 @@ let tempToolObjs = toolObjs; // holds toolObjs in a temp list to be used for par
 
 function properParent(obj) {
   let objParent = obj.parent;
-  if (objParent.type === "PAGE") {
-    objParent = figma.currentPage;
-  } else if (objParent.type != "FRAME" || objParent.type != "SECTION") {
+  console.log(objParent)
+  
+  if (objParent.type === "FRAME" || objParent.type === "PAGE" || objParent.type === "SECTION") {
     // TODO: fix what happens if its in a section
+    return objParent;
+
+  } else {
     objParent = properParent(objParent); // will keep going up hierarchies until either a page or a frame is reached
   }
-
-  return objParent;
 }
 
+
 let goodParent = properParent(toolObjs[0]); // will hold the parent that all objects created via the plugin will be placed into
+
+console.log(goodParent);
 
 const toolObjNames = toolObjs.map((obj) => obj.name); // maps items from a defined list and allows you to create a new list by taking properties of each item from that predefined list, woa!!!
 console.log(toolObjNames)
@@ -326,28 +330,13 @@ figma.ui.onmessage = async (pluginMessage) => {
           mmGroup.name += obj + ", ";
         }
 
-        for (let i = 0; i < toolGroup.children.length; i++) {
-          let obj = toolGroup.children[i];
-          let name = mmGroup.name;
-          if (i < 3) {
-            name += obj.name + ", ";
-          } else {
-            name = mmGroup.name.substring(0, mmGroup.name.length - 2); // removes the comma at the end
-            name += "...";
-            break;
-          }
-
-          if (name[name.length - 1] === ",") {
-            name = name.substring(0, name.length - 2);
-          }
-        }
-
         figma.currentPage.selection = [mmGroup];
         // TODO: fix indexing, objects should be placed at proper layer
       }
     } else if (msgFor === 4) {
       // rotsymm functionality
       let compBottom = compGroup.y + compGroup.height;
+      let compRight = compGroup.x + compGroup.width;
       const numCopies = pluginMessage.numCopies;
 
       let objPosition = TLtoC(compGroup);
@@ -356,10 +345,11 @@ figma.ui.onmessage = async (pluginMessage) => {
       let yDiff = objPosition[1] - originPosition[1];
 
       let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+      console.log(radius)
       let angle = Math.acos(xDiff / radius); // returns the angle that the object makes with the origin as per the unit circle
 
       if (Math.round(originPosition[1]) <= Math.round(compGroup.y)) {
-        // angle measured is always below pi, despite that not being the case all the time. to fix this, i just check for if the cursor is above the compGroup
+        // angle measured is always between 0 - PI, despite that not being the case all the time. to fix this, i just check for if the cursor is above the compGroup
         angle = -angle;
       }
 
@@ -368,43 +358,52 @@ figma.ui.onmessage = async (pluginMessage) => {
       const rotationAngle = (2 * Math.PI) / numCopies;
       const rotationAngleDeg = (rotationAngle * 180) / Math.PI;
 
+      if (
+        originPosition[1] > compGroup.y &&
+        originPosition[1] < compBottom
+      ) {
+        if (originPosition[0] > Math.round(compRight)) {
+            compGroup.y -= radius/2
+            compGroup.children[0].y += radius/2;
+        } else {
+            console.log('fella')
+            compGroup.y -= radius
+            compGroup.children[0].y += radius;
+        }
+      }
+
+
       for (let i = 1; i < numCopies; i++) {
         angle += rotationAngle; // will hold the angle that the instance will be at on the unit circle
         let objAngle = -rotationAngle * i;
         let objAngleDeg = Math.round(rotationAngleDeg * i); // for naming the respective components
 
+        console.log(originPosition)
+
         objInst = compGroup.createInstance();
+        goodParent.appendChild(objInst);
+                
         objInst.x = originPosition[0] + cos(angle) * radius; // cursor position is the base position, x position varies based on unit circle (sin is vertical, cos is horizontal)
         objInst.y = originPosition[1] - sin(angle) * radius;
 
         objInst.name = "Rotation " + objAngleDeg + "°";
         // console.log(objInst.x, objInst.y);
-        let objInstPosition = TLtoC(objInst);
 
         let cosAngle = cos(objAngle); // so the computer doesnt have to calculate it over and over :D
         let sinAngle = sin(objAngle);
 
-        console.log(angle);
-        console.log(sinAngle, cosAngle);
-
         objInst.relativeTransform = [
           [cosAngle, -sinAngle, objInst.x],
-          [sinAngle, cosAngle, objInst.x],
+          [sinAngle, cosAngle, objInst.y],
         ];
+
+        let objInstPosition = TLtoC(objInst);
         let objBoxPosition = TLtoC(objInst.absoluteBoundingBox); // holds the bounding box's position from its center
 
         objInst.x += objInstPosition[0] - objBoxPosition[0] - objInst.width / 2;
-        objInst.y +=
-          objInstPosition[1] - objBoxPosition[1] - objInst.height / 2;
+        objInst.y += objInstPosition[1] - objBoxPosition[1] - objInst.height / 2;
 
-        if (
-          originPosition[1] > compGroup.y &&
-          originPosition[1] < compBottom &&
-          originPosition[0] < compGroup.x
-        ) {
-          objInst.y -= objInst.height / 2; // TODO: for some reason, placing the cursor in Q1 fucks it all up, IDK why
-        }
-
+        
         rotateList.push(objInst);
       }
     
