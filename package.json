@@ -12,5 +12,8 @@
   "devDependencies": {
     "@figma/plugin-typings": "^1.70.0",
     "typescript": "*"
+  },
+  "dependencies": {
+    "prettier": "^3.0.3"
   }
 }
