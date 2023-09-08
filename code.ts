@@ -338,6 +338,9 @@ figma.ui.onmessage = async (pluginMessage) => {
       let compBottom = compGroup.y + compGroup.height;
       let compRight = compGroup.x + compGroup.width;
       const numCopies = pluginMessage.numCopies;
+      
+      const oldCompX = compGroup.x
+      const oldCompY = compGroup.y
 
       let objPosition = TLtoC(compGroup);
 
@@ -372,22 +375,21 @@ figma.ui.onmessage = async (pluginMessage) => {
         }
       }
 
-
       for (let i = 1; i < numCopies; i++) {
         angle += rotationAngle; // will hold the angle that the instance will be at on the unit circle
         let objAngle = -rotationAngle * i;
         let objAngleDeg = Math.round(rotationAngleDeg * i); // for naming the respective components
 
-        console.log(originPosition)
-
         objInst = compGroup.createInstance();
-        goodParent.appendChild(objInst);
+
+        console.log(originPosition);
                 
         objInst.x = originPosition[0] + cos(angle) * radius; // cursor position is the base position, x position varies based on unit circle (sin is vertical, cos is horizontal)
         objInst.y = originPosition[1] - sin(angle) * radius;
 
+        console.log(objInst.x, objInst.y)
+
         objInst.name = "Rotation " + objAngleDeg + "°";
-        // console.log(objInst.x, objInst.y);
 
         let cosAngle = cos(objAngle); // so the computer doesnt have to calculate it over and over :D
         let sinAngle = sin(objAngle);
@@ -402,12 +404,15 @@ figma.ui.onmessage = async (pluginMessage) => {
 
         objInst.x += objInstPosition[0] - objBoxPosition[0] - objInst.width / 2;
         objInst.y += objInstPosition[1] - objBoxPosition[1] - objInst.height / 2;
-
         
         rotateList.push(objInst);
       }
     
-      rsGroup = figma.group(rotateList, goodParent);
+      rsGroup = figma.group(rotateList, figma.currentPage);
+      goodParent.appendChild(rsGroup)
+      
+      compGroup.x = oldCompX;
+      compGroup.y = oldCompY;
 
       rsGroup.name = "🔅 ";
 
