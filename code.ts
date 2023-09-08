@@ -8,24 +8,26 @@ let tempToolObjs = toolObjs; // holds toolObjs in a temp list to be used for par
 
 function properParent(obj) {
   let objParent = obj.parent;
-  console.log(objParent)
-  
-  if (objParent.type === "FRAME" || objParent.type === "PAGE" || objParent.type === "SECTION") {
+  console.log(objParent);
+
+  if (
+    objParent.type === "FRAME" ||
+    objParent.type === "PAGE" ||
+    objParent.type === "SECTION"
+  ) {
     // TODO: fix what happens if its in a section
     return objParent;
-
   } else {
     objParent = properParent(objParent); // will keep going up hierarchies until either a page or a frame is reached
   }
 }
-
 
 let goodParent = properParent(toolObjs[0]); // will hold the parent that all objects created via the plugin will be placed into
 
 console.log(goodParent);
 
 const toolObjNames = toolObjs.map((obj) => obj.name); // maps items from a defined list and allows you to create a new list by taking properties of each item from that predefined list, woa!!!
-console.log(toolObjNames)
+console.log(toolObjNames);
 figma.ui.postMessage({ toolObjNames });
 
 let cursorPosition = []; // see if this works lol
@@ -338,9 +340,9 @@ figma.ui.onmessage = async (pluginMessage) => {
       let compBottom = compGroup.y + compGroup.height;
       let compRight = compGroup.x + compGroup.width;
       const numCopies = pluginMessage.numCopies;
-      
-      const oldCompX = compGroup.x
-      const oldCompY = compGroup.y
+
+      const oldCompX = compGroup.x;
+      const oldCompY = compGroup.y;
 
       let objPosition = TLtoC(compGroup);
 
@@ -348,7 +350,7 @@ figma.ui.onmessage = async (pluginMessage) => {
       let yDiff = objPosition[1] - originPosition[1];
 
       let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-      console.log(radius)
+      console.log(radius);
       let angle = Math.acos(xDiff / radius); // returns the angle that the object makes with the origin as per the unit circle
 
       if (Math.round(originPosition[1]) <= Math.round(compGroup.y)) {
@@ -361,17 +363,14 @@ figma.ui.onmessage = async (pluginMessage) => {
       const rotationAngle = (2 * Math.PI) / numCopies;
       const rotationAngleDeg = (rotationAngle * 180) / Math.PI;
 
-      if (
-        originPosition[1] > compGroup.y &&
-        originPosition[1] < compBottom
-      ) {
+      if (originPosition[1] > compGroup.y && originPosition[1] < compBottom) {
         if (originPosition[0] > Math.round(compRight)) {
-            compGroup.y -= radius/2
-            compGroup.children[0].y += radius/2;
+          compGroup.y -= radius / 2;
+          compGroup.children[0].y += radius / 2;
         } else {
-            console.log('fella')
-            compGroup.y -= radius
-            compGroup.children[0].y += radius;
+          console.log("fella");
+          compGroup.y -= radius;
+          compGroup.children[0].y += radius;
         }
       }
 
@@ -383,11 +382,11 @@ figma.ui.onmessage = async (pluginMessage) => {
         objInst = compGroup.createInstance();
 
         console.log(originPosition);
-                
+
         objInst.x = originPosition[0] + cos(angle) * radius; // cursor position is the base position, x position varies based on unit circle (sin is vertical, cos is horizontal)
         objInst.y = originPosition[1] - sin(angle) * radius;
 
-        console.log(objInst.x, objInst.y)
+        console.log(objInst.x, objInst.y);
 
         objInst.name = "Rotation " + objAngleDeg + "°";
 
@@ -403,14 +402,15 @@ figma.ui.onmessage = async (pluginMessage) => {
         let objBoxPosition = TLtoC(objInst.absoluteBoundingBox); // holds the bounding box's position from its center
 
         objInst.x += objInstPosition[0] - objBoxPosition[0] - objInst.width / 2;
-        objInst.y += objInstPosition[1] - objBoxPosition[1] - objInst.height / 2;
-        
+        objInst.y +=
+          objInstPosition[1] - objBoxPosition[1] - objInst.height / 2;
+
         rotateList.push(objInst);
       }
-    
+
       rsGroup = figma.group(rotateList, figma.currentPage);
-      goodParent.appendChild(rsGroup)
-      
+      goodParent.appendChild(rsGroup);
+
       compGroup.x = oldCompX;
       compGroup.y = oldCompY;
 
