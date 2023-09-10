@@ -15,7 +15,6 @@ function properParent(obj) {
     objParent.type === "PAGE" ||
     objParent.type === "SECTION"
   ) {
-    // TODO: fix what happens if its in a section
     return objParent;
   } else {
     objParent = properParent(objParent); // will keep going up hierarchies until either a page or a frame is reached
@@ -23,8 +22,6 @@ function properParent(obj) {
 }
 
 let goodParent = properParent(toolObjs[0]); // will hold the parent that all objects created via the plugin will be placed into
-
-console.log(goodParent);
 
 const toolObjNames = toolObjs.map((obj) => obj.name); // maps items from a defined list and allows you to create a new list by taking properties of each item from that predefined list, woa!!!
 console.log(toolObjNames);
@@ -69,7 +66,7 @@ function TLtoC(obj) {
 
 function rotateFromCenter(obj, angle) {
   return [
-    [cos(angle), -sin(angle), obj.x], // TODO: rotation for RotSymm needs to be fixed, since the object won't necessarily be rotated by increments of a
+    [cos(angle), -sin(angle), obj.x], 
     [sin(angle), cos(angle), obj.y],
   ];
 }
@@ -82,13 +79,12 @@ function componentify(obj) {
   objComp.name = obj.name;
   objComp.x = obj.x;
   objComp.y = obj.y;
-  //objComp.resize(obj.width, obj.height); // nEED TO CONVERT ALL CODE TO WORK WITH RELATIVE TRANSFORMS INSTEAD OF GLOBAL TRANSFORM :SOB:
   objComp.resizeWithoutConstraints(obj.width, obj.height);
 
   obj.relativeTransform = [
     // places the source obj (from toolObjs) directly at where the component frame is
     [1, 0, 0],
-    [0, 1, 0], // STILL NEED TO FIGURE OUT HOW THE DAMN ROTATION WORK
+    [0, 1, 0],
   ];
 
   // objComp.relativeTransform = [
@@ -256,9 +252,14 @@ figma.ui.onmessage = async (pluginMessage) => {
     if (cursorGroup) {
       origin = cursorGroup;
     } else {
-      origin = figma.root.findOne((node) => node.name === getSelectedObjName());
+      if (figma.currentPage.selection.length === 1) {
+        origin = [figma.currentPage.selection][0][0];
+      } else {
+        figma.closePlugin('🚨 Make sure you only have one object selected to be the origin!')
+      }
     }
 
+    console.log(origin)
     let originPosition = TLtoC(origin);
 
     const toolGroup = figma.group(toolObjs, goodParent);
@@ -350,7 +351,6 @@ figma.ui.onmessage = async (pluginMessage) => {
       let yDiff = objPosition[1] - originPosition[1];
 
       let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-      console.log(radius);
       let angle = Math.acos(xDiff / radius); // returns the angle that the object makes with the origin as per the unit circle
 
       if (Math.round(originPosition[1]) <= Math.round(compGroup.y)) {
@@ -368,7 +368,6 @@ figma.ui.onmessage = async (pluginMessage) => {
           compGroup.y -= radius / 2;
           compGroup.children[0].y += radius / 2;
         } else {
-          console.log("fella");
           compGroup.y -= radius;
           compGroup.children[0].y += radius;
         }
@@ -402,8 +401,7 @@ figma.ui.onmessage = async (pluginMessage) => {
         let objBoxPosition = TLtoC(objInst.absoluteBoundingBox); // holds the bounding box's position from its center
 
         objInst.x += objInstPosition[0] - objBoxPosition[0] - objInst.width / 2;
-        objInst.y +=
-          objInstPosition[1] - objBoxPosition[1] - objInst.height / 2;
+        objInst.y += objInstPosition[1] - objBoxPosition[1] - objInst.height / 2;
 
         rotateList.push(objInst);
       }
