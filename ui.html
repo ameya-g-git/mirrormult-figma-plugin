@@ -6,11 +6,9 @@
     --purple: #C60BFF;
     --bg: #242325;
     --bg-dark: #1F1F21;
-    --grad: linear-gradient( 90deg,
-      var(--pink), 0%,
-      var(--purple), 50%,
-      var(--yellow), 100%
-      );
+    --grad: linear-gradient( 0.25turn, var(--pink),
+                                      var(--purple) 10%,
+                                      var(--yellow) 20%);
   }
 
   body {
@@ -20,14 +18,21 @@
     overflow: hidden;
   } 
 
-  
   * {
     font-family: 'Futura';
     color: white;
+    box-sizing: content-box;
   }
 
   button, input {
     background-color: black;
+  }
+
+  hr {
+    opacity: 50%;
+    width: 100%;
+    stroke-linecap: round;
+    align-self: center;
   }
 
 /* MAKES IT EASY TO SEE HOW ELEMENTS ARE NESTED, UNCOMMENT IF NEEDED */
@@ -42,16 +47,38 @@
 * * * * * * * * { outline: 1px solid blue } */
 
   h1 {
-    margin: 10px 0px;
+    margin: 24px 0px 0px;
+    font-size: 28px;
+    display: inline-block;
+    padding-right: 16px;
+    border-right: 2px dashed rgba(255, 255, 255, 0.5) ;
+  }
+
+  #reflected {
+    padding-left: 8px;
+    transform: scaleX(-1);
+    background: linear-gradient(0.25turn, transparent 10%, #fff);
+    opacity: 20%;
+    color: transparent;
+    -webkit-background-clip: text;
+    border-right: none;
+    padding-right: 0px;
+  }
+
+  #plugin-logo {
+    display: block;
+    position: absolute;
+    top: 15px;
+    margin: 0px 126px;
   }
 
   div.tab {
     position: relative;
     display: inline-block;
-    z-index: 1;
-    filter: brightness(80%);
-    margin: 0px -5vh 0px 5px;
-    top: 6vh;
+    z-index: 4;
+    filter: brightness(70%);
+    margin: 0px -6vh 0px 6px;
+    top: 22.5px;
     cursor: pointer;
   }
 
@@ -61,26 +88,38 @@
 
   div.tab svg {
     width: auto;
-    height: 5vh;
-    
+    height: 7vh;
   }
 
   div.tab.active {
-    z-index: 2;
+    z-index: 7;
     filter: brightness(1);
+  }
+
+  #gradient-line {
+    position: fixed;
+    transform: translate(0px, 13px);
+    z-index: 5;
+    height: 5px;
+    width: 100%;
+    background-image: var(--grad);
   }
 
   section {
     position: fixed;
     top: 10vh;
     background-color: var(--bg);
-    border-top: 7px solid red;
-    padding-bottom: 100vh;
-    padding-top: 1em;
+    padding: 0px 0px 100vh 12px;
     margin: 0px;
-
   }
 
+  section div {
+    margin: auto 0px;
+  }
+
+  section :not(hr) {
+    margin-left: 10px;
+  }
 
   /* toolobj chips */
 
@@ -97,6 +136,35 @@
 </style>
 
 <!-- HTML -->
+<div id="plugin-logo">
+  <svg width="148" height="20" viewBox="0 0 148 20" fill="none" xmlns="http://www.w3.org/2000/svg"> <!-- plugin logo-->
+  <g opacity="0.3">
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M21.1591 20L32.9713 9.1633L27.5638 18.534H31.0027L40.4614 2.14288L37.5199 1.5378L25.3928 12.6634L21.1591 20Z" fill="white"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M21.9044 12.227L22.5898 1.53724L18.95 2.14232L9.49121 18.5334H12.9301L18.3376 9.16274L17.6708 19.5636L21.9044 12.227Z" fill="white"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M30.4645 1.50367L20.1477 19.8537L19.1486 19.2914L29.4654 0.941406L30.4645 1.50367Z" fill="white"/>
+  <path d="M44.1238 5.42732C43.5271 5.77182 42.8822 5.77182 42.6833 5.42732C42.4844 5.08282 42.8069 4.52427 43.4036 4.17976C44.0003 3.83526 44.6452 3.83526 44.8441 4.17976C45.043 4.52427 44.7205 5.08282 44.1238 5.42732Z" fill="white"/>
+  <path d="M35.6576 17.2672C35.4587 16.9227 35.7812 16.3642 36.3778 16.0197C36.9745 15.6752 37.6195 15.6752 37.8184 16.0197C38.0173 16.3642 37.6948 16.9227 37.0981 17.2672C36.5014 17.6117 35.8565 17.6117 35.6576 17.2672Z" fill="white"/>
+  <path d="M42.5534 11.6398C41.9908 11.6398 41.7628 11.2448 42.0441 10.7576C42.3254 10.2704 43.0094 9.87544 43.572 9.87544C44.1346 9.87544 44.3626 10.2704 44.0813 10.7576C43.8 11.2448 43.116 11.6398 42.5534 11.6398Z" fill="white"/>
+  <path d="M13.493 2.96322C13.7057 3.33151 13.3609 3.92861 12.723 4.2969C12.0851 4.66518 11.3957 4.66518 11.183 4.2969C10.9704 3.92861 11.3151 3.33151 11.953 2.96322C12.5909 2.59494 13.2804 2.59494 13.493 2.96322Z" fill="white"/>
+  <path d="M6.1212 8.97917C6.7226 8.97917 6.96637 9.40139 6.66567 9.92222C6.36497 10.4431 5.63366 10.8653 5.03226 10.8653C4.43085 10.8653 4.18709 10.4431 4.48779 9.92222C4.78849 9.40139 5.51979 8.97917 6.1212 8.97917Z" fill="white"/>
+  <path d="M4.44234 15.6204C5.08022 15.2522 5.7697 15.2522 5.98233 15.6204C6.19496 15.9887 5.85022 16.5858 5.21233 16.9541C4.57445 17.3224 3.88497 17.3224 3.67234 16.9541C3.45971 16.5858 3.80445 15.9887 4.44234 15.6204Z" fill="white"/>
+  </g>
+  <g opacity="0.3">
+  <path d="M57.4736 15.897L59.3092 5.21889H62.0912L64.2566 10.912L66.4077 5.21889H69.1897L71.0252 15.897H68.2289L67.2968 9.7507L64.7442 15.897H63.6256L61.2021 9.7507L60.27 15.897H57.4736Z" fill="white"/>
+  <path d="M75.9462 8.63191V15.897H73.3506V8.63191H75.9462ZM73.1785 5.84201C73.1785 5.64374 73.2168 5.45964 73.2933 5.28969C73.3697 5.11031 73.4749 4.95453 73.6087 4.82235C73.7426 4.69017 73.8956 4.58632 74.0676 4.51079C74.2493 4.43526 74.4405 4.39749 74.6413 4.39749C74.842 4.39749 75.0284 4.43526 75.2005 4.51079C75.3822 4.58632 75.5399 4.69017 75.6738 4.82235C75.8076 4.95453 75.9128 5.11031 75.9892 5.28969C76.0657 5.45964 76.104 5.64374 76.104 5.84201C76.104 6.04028 76.0657 6.2291 75.9892 6.40849C75.9128 6.57843 75.8076 6.72949 75.6738 6.86167C75.5399 6.99385 75.3822 7.0977 75.2005 7.17323C75.0284 7.24876 74.842 7.28653 74.6413 7.28653C74.4405 7.28653 74.2493 7.24876 74.0676 7.17323C73.8956 7.0977 73.7426 6.99385 73.6087 6.86167C73.4749 6.72949 73.3697 6.57843 73.2933 6.40849C73.2168 6.2291 73.1785 6.04028 73.1785 5.84201Z" fill="white"/>
+  <path d="M78.5087 8.63191H81.1043V9.82151C81.3815 9.38721 81.7209 9.05677 82.1224 8.83018C82.524 8.59414 82.9924 8.47613 83.5278 8.47613C83.5947 8.47613 83.6664 8.47613 83.7429 8.47613C83.8289 8.47613 83.9245 8.48557 84.0297 8.50445V10.9545C83.6855 10.7845 83.3127 10.6996 82.9111 10.6996C82.3088 10.6996 81.8547 10.8789 81.5488 11.2377C81.2524 11.587 81.1043 12.1016 81.1043 12.7814V15.897H78.5087V8.63191Z" fill="white"/>
+  <path d="M85.9774 8.63191H88.573V9.82151C88.8502 9.38721 89.1896 9.05677 89.5912 8.83018C89.9927 8.59414 90.4611 8.47613 90.9965 8.47613C91.0634 8.47613 91.1351 8.47613 91.2116 8.47613C91.2977 8.47613 91.3933 8.48557 91.4984 8.50445V10.9545C91.1543 10.7845 90.7814 10.6996 90.3799 10.6996C89.7776 10.6996 89.3235 10.8789 89.0175 11.2377C88.7212 11.587 88.573 12.1016 88.573 12.7814V15.897H85.9774V8.63191Z" fill="white"/>
+  <path d="M95.9543 12.229C95.9543 12.4745 95.9974 12.7011 96.0834 12.9088C96.179 13.1071 96.2985 13.2817 96.4419 13.4328C96.5949 13.5839 96.7717 13.7019 96.9725 13.7869C97.1828 13.8718 97.4027 13.9143 97.6322 13.9143C97.8616 13.9143 98.0767 13.8718 98.2775 13.7869C98.4878 13.7019 98.6647 13.5839 98.8081 13.4328C98.961 13.2817 99.0805 13.1071 99.1666 12.9088C99.2622 12.7011 99.31 12.4792 99.31 12.2432C99.31 12.0166 99.2622 11.8042 99.1666 11.6059C99.0805 11.3982 98.961 11.2188 98.8081 11.0678C98.6647 10.9167 98.4878 10.7987 98.2775 10.7137C98.0767 10.6287 97.8616 10.5863 97.6322 10.5863C97.4027 10.5863 97.1828 10.6287 96.9725 10.7137C96.7717 10.7987 96.5949 10.9167 96.4419 11.0678C96.2985 11.2188 96.179 11.3935 96.0834 11.5918C95.9974 11.79 95.9543 12.0024 95.9543 12.229ZM93.2153 12.2007C93.2153 11.6626 93.3253 11.1622 93.5452 10.6996C93.7651 10.2275 94.071 9.82151 94.463 9.48163C94.8549 9.1323 95.3186 8.8585 95.854 8.66023C96.3989 8.46197 96.9916 8.36283 97.6322 8.36283C98.2631 8.36283 98.8463 8.46197 99.3817 8.66023C99.9266 8.84906 100.395 9.11814 100.787 9.46746C101.189 9.80735 101.499 10.218 101.719 10.6996C101.939 11.1716 102.049 11.6956 102.049 12.2715C102.049 12.8474 101.934 13.3762 101.705 13.8577C101.485 14.3297 101.179 14.7404 100.787 15.0897C100.395 15.4296 99.9218 15.694 99.3673 15.8828C98.8224 16.0716 98.2297 16.1661 97.5891 16.1661C96.9582 16.1661 96.375 16.0716 95.8396 15.8828C95.3043 15.694 94.8406 15.4249 94.4486 15.0756C94.0662 14.7263 93.7651 14.3108 93.5452 13.8293C93.3253 13.3384 93.2153 12.7955 93.2153 12.2007Z" fill="white"/>
+  <path d="M104.332 8.63191H106.928V9.82151C107.205 9.38721 107.544 9.05677 107.946 8.83018C108.347 8.59414 108.816 8.47613 109.351 8.47613C109.418 8.47613 109.49 8.47613 109.566 8.47613C109.652 8.47613 109.748 8.48557 109.853 8.50445V10.9545C109.509 10.7845 109.136 10.6996 108.734 10.6996C108.132 10.6996 107.678 10.8789 107.372 11.2377C107.076 11.587 106.928 12.1016 106.928 12.7814V15.897H104.332V8.63191Z" fill="white"/>
+  <path d="M111.543 15.897L113.378 5.21889H116.16L118.326 10.912L120.477 5.21889H123.259L125.094 15.897H122.298L121.366 9.7507L118.813 15.897H117.695L115.271 9.7507L114.339 15.897H111.543Z" fill="white"/>
+  <path d="M130.015 8.63191V12.7247C130.015 13.6216 130.455 14.0701 131.335 14.0701C132.214 14.0701 132.654 13.6216 132.654 12.7247V8.63191H135.25V13.2204C135.25 14.2023 134.92 14.9387 134.26 15.4296C133.61 15.9206 132.635 16.1661 131.335 16.1661C130.035 16.1661 129.055 15.9206 128.395 15.4296C127.745 14.9387 127.42 14.2023 127.42 13.2204V8.63191H130.015Z" fill="white"/>
+  <path d="M140.397 4.14258V15.897H137.801V4.14258H140.397Z" fill="white"/>
+  <path d="M145.856 10.7704V15.897H143.261V10.7704H142.4V8.63191H143.261V6.45097H145.856V8.63191H147.333V10.7704H145.856Z" fill="white"/>
+  </g>
+  </svg>
+</div>
+  
+
 <div class="tab active" id="tab-mm">
   <svg width="191" height="49" viewBox="0 0 191 49" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M29.9238 16.0095L5.20117 49H185.201L160.479 16.0095C154.813 8.44972 145.918 4 136.471 4H53.9309C44.484 4 35.5889 8.44972 29.9238 16.0095Z" fill="#242325"/>
@@ -110,8 +178,6 @@
     </linearGradient>
     </defs>
   </svg>
-    
-  <!-- <h1 id="page-mm">MirrorMult</h1> -->
 </div>
 
 <div class="tab" id="tab-rs">
@@ -129,8 +195,12 @@
   </svg>    
 </div>
 
+<div id="gradient-line">
+</div>
+
 <section id="hidden-mm" style="display: block;">
   <h1>MirrorMult</h1>
+  <h1 id="reflected">MirrorMult</h1>
   
   <div class="tool-objs">
     <h3>Objects being mirrored:</h3>
@@ -207,15 +277,10 @@
 
 </section>
 
-<!-- need to work on:
-* figuring out how empty origin obj checkbox will work (likely, changing sections will just uncheck the checkbox to make life easier)
-  * will also require an event listener in TS to detect when checkbox changes
-  * obviously, need to finish up rotsymm html + js postMessage
-  * after this, html and js are essentially done methinks
--->
-
 <!-- JS -->
 <script>
+  window.resizeTo(400, 500)
+
   let toolObjs;
 
   window.onmessage = event => { // listens for change in selected object to update respective element
@@ -257,6 +322,7 @@
   // checkbox variables
 
   let msgFor = 0;
+  let r = document.querySelector(':root');
 
   const checkboxMM = document.getElementById('mirror-obj-mm');
   const checkboxRS = document.getElementById('mirror-obj-rs');
@@ -281,6 +347,8 @@
     tabMM.classList.add('active') // for the css
     tabRS.classList.remove('active')
 
+    r.style.setProperty('--grad', 'linear-gradient(0.25turn, var(--pink), var(--purple) 10%, var(--yellow) 20%)');
+
     msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
     parent.postMessage({pluginMessage: {msgFor}}, '*');
   });
@@ -293,6 +361,8 @@
     
     tabRS.classList.add('active') // for the css
     tabMM.classList.remove('active')
+
+    r.style.setProperty('--grad', 'linear-gradient(0.25turn, var(--pink) 30%, var(--purple) 40%, var(--yellow) 50%)');
 
     msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
     parent.postMessage({pluginMessage: {msgFor}}, '*');
