@@ -6,6 +6,7 @@
     --purple: #C60BFF;
     --bg: #242325;
     --bg-dark: #1F1F21;
+    --chip-stroke: #474549;
     --grad: linear-gradient( 0.25turn, var(--pink),
                                       var(--purple) 10%,
                                       var(--yellow) 20%);
@@ -37,21 +38,22 @@
 
 /* MAKES IT EASY TO SEE HOW ELEMENTS ARE NESTED, UNCOMMENT IF NEEDED */
 
-  /* * { outline: 2px dotted red }
+  * { outline: 2px dotted red }
 * * { outline: 2px dotted green }
 * * * { outline: 2px dotted orange; }
 * * * * { outline: 2px dotted blue }
 * * * * * { outline: 1px solid red }
 * * * * * * { outline: 1px solid green }
 * * * * * * * { outline: 1px solid orange }
-* * * * * * * * { outline: 1px solid blue } */
+* * * * * * * * { outline: 1px solid blue }
 
   h1 {
     margin: 24px 0px 0px;
     font-size: 28px;
     display: inline-block;
     padding-right: 16px;
-    border-right: 2px dashed rgba(255, 255, 255, 0.5) ;
+    border-right: 2px dashed rgba(255, 255, 255, 0.5);
+    filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.25))
   }
 
   #reflected {
@@ -67,9 +69,10 @@
 
   #plugin-logo {
     display: block;
-    position: absolute;
+    position: relative;
     top: 15px;
-    margin: 0px 126px;
+    width: 100%;
+    margin: 4px 126px;
   }
 
   div.tab {
@@ -106,17 +109,23 @@
   }
 
   section {
-    position: fixed;
-    top: 10vh;
+    position: relative;
+    top: 16px;
     background-color: var(--bg);
-    padding: 0px 0px 100vh 12px;
+    padding-bottom: 100vh 0px;
     margin: 0px;
   }
 
   section div {
-    margin: auto 0px;
+    margin: auto;
   }
 
+  section div h3 {
+    font-size: 18px;
+    margin: 24px 0px 0px 0px;
+    opacity: 75%;
+  }
+  
   section :not(hr) {
     margin-left: 10px;
   }
@@ -124,10 +133,23 @@
   /* toolobj chips */
 
   div.tool-obj {
-    display: inline-flex;
+    font-size: 14px;
+    display: inline-block;
     width: fit-content;
     border-radius: 12px;
-    background-color: red;
+    background-color: var(--bg-dark);
+    outline: 2px solid var(--chip-stroke);
+    margin: 10px 16px 10px 0px;
+  }
+
+  div.tool-objs {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  div#tool-objs-container {
+   
   }
 
   div.tool-obj p {
@@ -203,10 +225,10 @@
   <h1 id="reflected">MirrorMult</h1>
   
   <div class="tool-objs">
-    <h3>Objects being mirrored:</h3>
-    <div class="tool-objs-container"> 
+    <h3>Objects Being Mirrored:</h3>
+    <div id="tool-objs-container"> 
       <!-- this is where the object chips go -->
-    </div>   
+    </div> 
   </div>
 
   <hr>
