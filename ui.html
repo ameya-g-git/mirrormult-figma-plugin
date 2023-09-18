@@ -29,6 +29,10 @@
 
   button, input {
     background-color: black;
+    border: 0px;
+  }
+  button {
+    cursor: pointer;
   }
 
   hr {
@@ -47,9 +51,13 @@
     filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.25))
   }
 
+  section * * {
+    margin-left: 0px !important;
+  }
+
 
 /* MAKES IT EASY TO SEE HOW ELEMENTS ARE NESTED, UNCOMMENT IF NEEDED */
-
+/* 
 * { outline: 2px dotted red }
 * * { outline: 2px dotted green }
 * * * { outline: 2px dotted orange; }
@@ -57,7 +65,7 @@
 * * * * * { outline: 1px solid red }
 * * * * * * { outline: 1px solid green }
 * * * * * * * { outline: 1px solid orange }
-* * * * * * * * { outline: 1px solid blue }
+* * * * * * * * { outline: 1px solid blue } */
 
  
   /* UPPER UI - THE STUFF THAT STAYS ON SCREEN AT ALL TIME*/
@@ -129,10 +137,6 @@
     padding-left: 0px;
   }
 
-  div#direction * * *{
-    padding-left: 0px;
-  }
-
   h3 {
     font-size: 18px;
     margin: 24px 0px 0px 0px;
@@ -180,8 +184,66 @@
   }
 
   div.tool-obj p {
-    margin: 8px;
+    margin: 8px !important;
   }
+
+  /* INPUT STYLES */
+
+  div#copies-input {
+    display: inline-flex;
+    height: 44px;
+    gap: 4px;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin: 8px 0px;
+    padding: 4px;
+    padding-bottom: 0px;
+    border-radius: 12px;
+    border: 3px solid var(--deselected); 
+  }
+
+  div#copies-input * {
+    height: 24px;
+    border-radius: 8px;
+    padding: 5px 5px;
+    border: 2px solid var(--deselected);
+    background-color: transparent;
+  }
+
+  div#copies-input button {
+    opacity: 0.5;
+    background-color: transparent;
+    filter: none;
+    border: 2px solid var(--deselected);
+    scale: 1;
+    transition: all 0.1s ease-in-out;
+  }
+
+  div#copies-input button:hover {
+    opacity: 1;
+  }
+
+  div#copies-input button:active {
+    background-color: var(--purple);
+    filter: drop-shadow(0px 0px 6px var(--purple));
+    border: 0px solid transparent;
+    scale: 1.2;
+  }
+
+  div#copies-input button svg {
+    border: 0px;
+  }
+
+  button * {
+    translate: 0px -2px;
+  }
+
+  div#copies-input input {
+    width: 80px;
+    text-align: center;
+    appearance: textfield;
+  }
+
 </style>
 
 <!-- HTML -->
@@ -306,9 +368,17 @@
   <div id="copies">
     <h3>Number of Copies:</h3>
     <div id="copies-input">
-      <button class="input" id="minus">-</button>
-      <input type="number" id="num-copies" min="2" step="1" value="2">
-      <button class="input" id="plus">+</button>
+      <button class="input" id="minus">
+        <svg width="15" height="6" viewBox="0 0 15 6" fill="none" xmlns="http://www.w3.org/2000/svg"> <!-- MINUS SIGN-->
+          <path d="M14 0.5H1C0.447715 0.5 0 0.947715 0 1.5V4.5C0 5.05228 0.447715 5.5 1 5.5H14C14.5523 5.5 15 5.05228 15 4.5V1.5C15 0.947715 14.5523 0.5 14 0.5Z" fill="white"/>
+        </svg>          
+      </button>
+      <input type="text" inputmode="numeric" id="num-copies" min="2" step="1" value="2">
+      <button class="input" id="plus">
+        <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg"> <!-- PLUS SIGN-->
+          <path d="M9 0.5H6C5.44772 0.5 5 0.947715 5 1.5V5.5L1 5.5C0.447715 5.5 0 5.94771 0 6.5V9.5C0 10.0523 0.447715 10.5 1 10.5L5 10.5V14.5C5 15.0523 5.44772 15.5 6 15.5H9C9.55229 15.5 10 15.0523 10 14.5V10.5H14C14.5523 10.5 15 10.0523 15 9.5V6.5C15 5.94772 14.5523 5.5 14 5.5H10V1.5C10 0.947715 9.55229 0.5 9 0.5Z" fill="white"/>
+        </svg>          
+      </button>
     </div>
   </div>  
 
@@ -390,17 +460,20 @@
   const tabMM = document.getElementById('tab-mm')
   const tabRS = document.getElementById('tab-rs')
 
-  const numCopies = document.getElementById('num-copies');
+  let numCopies;
+  let newVal;
 
   document.getElementById('minus').onclick = () => {
-    let newVal = parseInt(numCopies.value) - 1;
+    numCopies = document.getElementById('num-copies');
+    newVal = parseInt(numCopies.value) - 1;
     if (newVal > 1) {
       numCopies.setAttribute('value', newVal);
     }
   };
 
   document.getElementById('plus').onclick = () => {
-    let newVal = parseInt(numCopies.value) + 1;
+    numCopies = document.getElementById('num-copies');
+    newVal = parseInt(numCopies.value) + 1;
     numCopies.setAttribute('value', newVal);
   };
   const copiesPlus = document.getElementById('plus')
