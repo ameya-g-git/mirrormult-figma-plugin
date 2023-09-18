@@ -7,11 +7,13 @@
     --bg: #242325;
     --bg-dark: #1F1F21;
     --chip-stroke: #474549;
+    --deselected: #504F51;
     --grad: linear-gradient( 0.25turn, var(--pink),
                                       var(--purple) 10%,
                                       var(--yellow) 20%);
   }
 
+  /* GENERAL STYLES */
   body {
     background-color: var(--bg-dark);
     margin: 0px;
@@ -36,9 +38,19 @@
     align-self: center;
   }
 
+  h1 {
+    margin: 24px 0px 0px;
+    font-size: 28px;
+    display: inline-block;
+    padding-right: 16px;
+    border-right: 2px dashed rgba(255, 255, 255, 0.5);
+    filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.25))
+  }
+
+
 /* MAKES IT EASY TO SEE HOW ELEMENTS ARE NESTED, UNCOMMENT IF NEEDED */
 
-  * { outline: 2px dotted red }
+* { outline: 2px dotted red }
 * * { outline: 2px dotted green }
 * * * { outline: 2px dotted orange; }
 * * * * { outline: 2px dotted blue }
@@ -47,13 +59,15 @@
 * * * * * * * { outline: 1px solid orange }
 * * * * * * * * { outline: 1px solid blue }
 
-  h1 {
-    margin: 24px 0px 0px;
-    font-size: 28px;
-    display: inline-block;
-    padding-right: 16px;
-    border-right: 2px dashed rgba(255, 255, 255, 0.5);
-    filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.25))
+ 
+  /* UPPER UI - THE STUFF THAT STAYS ON SCREEN AT ALL TIME*/
+  
+  #plugin-logo {
+    display: block;
+    position: relative;
+    top: 15px;
+    width: 100%;
+    margin: 4px 126px;
   }
 
   #reflected {
@@ -65,14 +79,6 @@
     -webkit-background-clip: text;
     border-right: none;
     padding-right: 0px;
-  }
-
-  #plugin-logo {
-    display: block;
-    position: relative;
-    top: 15px;
-    width: 100%;
-    margin: 4px 126px;
   }
 
   div.tab {
@@ -108,6 +114,7 @@
     background-image: var(--grad);
   }
 
+  /* */
   section {
     position: relative;
     top: 16px;
@@ -118,9 +125,15 @@
 
   section div {
     margin: auto;
+    margin-left: 0px;
+    padding-left: 0px;
   }
 
-  section div h3 {
+  div#direction * * *{
+    padding-left: 0px;
+  }
+
+  h3 {
     font-size: 18px;
     margin: 24px 0px 0px 0px;
     opacity: 75%;
@@ -139,7 +152,7 @@
     border-radius: 12px;
     background-color: var(--bg-dark);
     outline: 2px solid var(--chip-stroke);
-    margin: 10px 16px 10px 0px;
+    margin: 10px 12px 10px 4px;
   }
 
   div.tool-objs {
@@ -148,8 +161,22 @@
     white-space: nowrap;
   }
   
-  div#tool-objs-container {
-   
+  ::-webkit-scrollbar {
+    background-color: var(--bg-dark);
+    box-shadow: inset 0px 0px 2px rgba(255, 255, 255, 0.25);
+    width: 90%;
+    height: 4px;
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--deselected);
+    border-radius: 3px;
+
+  }
+
+  ::-webkit-scrollbar-thumb :hover {
+    background-color: red;
   }
 
   div.tool-obj p {
@@ -185,7 +212,6 @@
   </g>
   </svg>
 </div>
-  
 
 <div class="tab active" id="tab-mm">
   <svg width="191" height="49" viewBox="0 0 191 49" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -224,9 +250,9 @@
   <h1>MirrorMult</h1>
   <h1 id="reflected">MirrorMult</h1>
   
+  <h3>Objects Being Mirrored:</h3>
   <div class="tool-objs">
-    <h3>Objects Being Mirrored:</h3>
-    <div id="tool-objs-container"> 
+    <div class="tool-objs-container"> 
       <!-- this is where the object chips go -->
     </div> 
   </div>
@@ -268,8 +294,8 @@
 <section id="hidden-rs" style="display: none;">
   <h1>RotSymm</h1>
 
+  <h3>Objects Being Rotated:</h3>
   <div class="tool-objs">
-    <h3>Objects being rotated:</h3>
     <div class="tool-objs-container"> 
       <!-- this is where the object chips go -->
     </div>   
@@ -278,8 +304,12 @@
   <hr>
   
   <div id="copies">
-    <label for="num-copies">Number of Copies:</label>
-    <input type="number" id="num-copies" min="2" step="1" value="2">
+    <h3>Number of Copies:</h3>
+    <div id="copies-input">
+      <button class="input" id="minus">-</button>
+      <input type="number" id="num-copies" min="2" step="1" value="2">
+      <button class="input" id="plus">+</button>
+    </div>
   </div>  
 
   <div id="origin-rs" class="origin">
@@ -359,7 +389,22 @@
 
   const tabMM = document.getElementById('tab-mm')
   const tabRS = document.getElementById('tab-rs')
-  
+
+  const numCopies = document.getElementById('num-copies');
+
+  document.getElementById('minus').onclick = () => {
+    let newVal = parseInt(numCopies.value) - 1;
+    if (newVal > 1) {
+      numCopies.setAttribute('value', newVal);
+    }
+  };
+
+  document.getElementById('plus').onclick = () => {
+    let newVal = parseInt(numCopies.value) + 1;
+    numCopies.setAttribute('value', newVal);
+  };
+  const copiesPlus = document.getElementById('plus')
+
   tabMM.addEventListener('click', function() { // allows for the MirrorMult button to take user to the MirrorMult Menu, with its specific inputs
     sectionMM.style.display = 'block';
     sectionRS.style.display = 'none';
@@ -426,7 +471,7 @@
   }
 
   document.getElementById('submit-rs').onclick = () => { // posts RotSymm message
-    const numCopies = document.getElementById('num-copies').value;
+    numCopies = document.getElementById('num-copies').value;
 
     msgFor = 4;
 
