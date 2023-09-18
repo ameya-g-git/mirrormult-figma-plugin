@@ -23,6 +23,8 @@ function properParent(obj) {
 
 let goodParent = properParent(toolObjs[0]); // will hold the parent that all objects created via the plugin will be placed into
 
+console.log(goodParent)
+
 const toolObjNames = toolObjs.map((obj) => obj.name); // maps items from a defined list and allows you to create a new list by taking properties of each item from that predefined list, woa!!!
 console.log(toolObjNames);
 figma.ui.postMessage({ toolObjNames });
