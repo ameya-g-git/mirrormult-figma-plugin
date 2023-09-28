@@ -37,7 +37,7 @@
 
   hr {
     opacity: 50%;
-    width: 100%;
+    width: 95%;
     stroke-linecap: round;
     align-self: center;
   }
@@ -57,8 +57,8 @@
 
 
 /* MAKES IT EASY TO SEE HOW ELEMENTS ARE NESTED, UNCOMMENT IF NEEDED */
-/* 
-* { outline: 2px dotted red }
+
+/* * { outline: 2px dotted red }
 * * { outline: 2px dotted green }
 * * * { outline: 2px dotted orange; }
 * * * * { outline: 2px dotted blue }
@@ -156,10 +156,11 @@
     border-radius: 12px;
     background-color: var(--bg-dark);
     outline: 2px solid var(--chip-stroke);
-    margin: 10px 12px 10px 4px;
+    margin: 10px 16px 10px 4px;
   }
 
   div.tool-objs {
+    padding: 4px;
     max-width: 100%;
     overflow-x: auto;
     white-space: nowrap;
@@ -199,7 +200,8 @@
     padding: 4px;
     padding-bottom: 0px;
     border-radius: 12px;
-    border: 3px solid var(--deselected); 
+    border: 3px solid var(--deselected);
+    width: fit-content; 
   }
 
   div#copies-input * {
@@ -216,6 +218,7 @@
     filter: none;
     border: 2px solid var(--deselected);
     scale: 1;
+    margin: 0px;
     transition: all 0.1s ease-in-out;
   }
 
@@ -225,9 +228,10 @@
 
   div#copies-input button:active {
     background-color: var(--purple);
+    margin: 0px 2px;
     filter: drop-shadow(0px 0px 6px var(--purple));
     border: 0px solid transparent;
-    scale: 1.2;
+    scale: 1.1;
   }
 
   div#copies-input button svg {
@@ -242,6 +246,30 @@
     width: 80px;
     text-align: center;
     appearance: textfield;
+  }
+
+  /* MISC. */
+
+  .lower-section {
+    display: inline-flex;
+    gap: 12px;
+    align-items: flex-start;
+    width: 97%;
+  }
+
+  .lower-section div>span, .lower-section div>label {
+    opacity: 0.75;
+    font-size: 14px;
+    margin-right: 4px;
+  }
+
+  .lower-section div input {
+    display: none;
+    position: relative;
+    border: 2px solid var(--deselected);
+    margin-left: 10px;
+    scale: 1.5;
+    border-radius: 800px;
   }
 
 </style>
@@ -336,15 +364,22 @@
     <label for="vert">Vertical</label>
   </div>
 
-  <div id="origin-mm" class="origin">
-    <span>Mirror Object:</span>
-    <p style="display: inline;">No object selected</p> <!-- changes based on selected object --> 
-  </div>
+  <div class="lower-section">
+    <div id="origin-mm" class="origin">
+      <span>Mirror Object:</span>
+      <div class="tool-obj">
+        <p>Nothing yet!</p> <!-- changes based on selected object --> 
+      </div> 
+    </div>
 
-  <div class="mirror-obj">
-    <label for="mirror-obj-mm">Use Empty Object</label>
-    <input id="mirror-obj-mm" type="checkbox">
-    <p class="empty-disclaimer">(will function the same as a regular object, but has axes for easier measurement and is deleted immediately after mirroring!)</span>
+    <div class="mirror-obj">
+      <label for="mirror-obj-mm">Use Empty Object:</label>
+      <input id="mirror-obj-mm" type="checkbox">
+      <!-- ADD ANOTHER DIV HERE TO ACT AS THE "VISUAL" CHECKBOX, WHILE THE REGULAR CHECKBOX IS HIDDEN -->
+      <!-- <p class="empty-disclaimer">(will function the same as a regular object, but has axes for easier measurement and is deleted immediately after mirroring!)</span> -->
+    </div>
+
+    
   </div>
 
   <div class="button">
@@ -373,7 +408,7 @@
           <path d="M14 0.5H1C0.447715 0.5 0 0.947715 0 1.5V4.5C0 5.05228 0.447715 5.5 1 5.5H14C14.5523 5.5 15 5.05228 15 4.5V1.5C15 0.947715 14.5523 0.5 14 0.5Z" fill="white"/>
         </svg>          
       </button>
-      <input type="text" inputmode="numeric" id="num-copies" min="2" step="1" value="2">
+      <input type="number" inputmode="numeric" id="num-copies" min="2" step="1" value="2">
       <button class="input" id="plus">
         <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg"> <!-- PLUS SIGN-->
           <path d="M9 0.5H6C5.44772 0.5 5 0.947715 5 1.5V5.5L1 5.5C0.447715 5.5 0 5.94771 0 6.5V9.5C0 10.0523 0.447715 10.5 1 10.5L5 10.5V14.5C5 15.0523 5.44772 15.5 6 15.5H9C9.55229 15.5 10 15.0523 10 14.5V10.5H14C14.5523 10.5 15 10.0523 15 9.5V6.5C15 5.94772 14.5523 5.5 14 5.5H10V1.5C10 0.947715 9.55229 0.5 9 0.5Z" fill="white"/>
@@ -382,21 +417,26 @@
     </div>
   </div>  
 
-  <div id="origin-rs" class="origin">
-    <span>Symmetry Origin:</span>
-    <p style="display: inline;">No object selected</p> <!-- changes based on selected object --> 
+  <div class="lower-section">
+    <div id="origin-rs" class="origin">
+      <span>Symm. Origin:</span>
+      <div class="tool-obj">
+        <p style="display: inline;">No object selected</p> <!-- changes based on selected object --> 
+      </div>
+    </div>
+
+    <div class="mirror-obj">
+      <label for="mirror-obj-rs">Use Empty Object: </label>
+      <input id="mirror-obj-rs" type="checkbox">
+      <!-- <p class="empty-disclaimer">(will function the same as a regular object, but has axes for easier measurement and is deleted immediately after mirroring!)</span> -->
+    </div>
+    
+    
   </div>
 
-  <div class="mirror-obj">
-    <label for="mirror-obj-rs">Use Empty Object</label>
-    <input id="mirror-obj-rs" type="checkbox">
-    <p class="empty-disclaimer">(will function the same as a regular object, but has axes for easier measurement and is deleted immediately after mirroring!)</span>
-  </div>
-  
   <div class="button">
     <button id="submit-rs">Rotationally Symmetrize!</button>
   </div>
-
 </section>
 
 <!-- JS -->
@@ -476,7 +516,6 @@
     newVal = parseInt(numCopies.value) + 1;
     numCopies.setAttribute('value', newVal);
   };
-  const copiesPlus = document.getElementById('plus')
 
   tabMM.addEventListener('click', function() { // allows for the MirrorMult button to take user to the MirrorMult Menu, with its specific inputs
     sectionMM.style.display = 'block';
