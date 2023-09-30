@@ -336,7 +336,8 @@ figma.ui.onmessage = async (pluginMessage) => {
         }
 
         figma.currentPage.selection = [mmGroup];
-        // TODO: fix indexing, objects should be placed at proper layer
+
+        figma.closePlugin('🪞 Objects successfully mirrored!')
       }
     } else if (msgFor === 4) {
       // rotsymm functionality
@@ -421,7 +422,7 @@ figma.ui.onmessage = async (pluginMessage) => {
       }
 
       figma.currentPage.selection = [rsGroup];
-      // TODO: fix indexing, objects should be placed at proper layer
+      figma.closePlugin('🔅 Objects successfully rotated!')
     }
   }
 };

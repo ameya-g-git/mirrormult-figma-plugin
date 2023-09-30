@@ -21,6 +21,10 @@
     overflow: hidden;
   } 
 
+  section {
+    height: 100vh;
+  }
+
   * {
     font-family: 'Futura';
     color: white;
@@ -49,6 +53,10 @@
     padding-right: 16px;
     border-right: 2px dashed rgba(255, 255, 255, 0.5);
     filter: drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.25))
+  }
+
+  #hidden-rs h1 {
+    border-right: none;
   }
 
   section * * {
@@ -87,6 +95,12 @@
     -webkit-background-clip: text;
     border-right: none;
     padding-right: 0px;
+  }
+
+  section>svg {
+    display: block;
+    position: fixed;
+    translate: 5vw -5.8vh;
   }
 
   div.tab {
@@ -190,6 +204,10 @@
 
   /* INPUT STYLES */
 
+  input#num-copies {
+    -webkit-appearance: textfield !important;
+  }
+
   div#copies-input {
     display: inline-flex;
     height: 44px;
@@ -201,10 +219,12 @@
     padding-bottom: 0px;
     border-radius: 12px;
     border: 3px solid var(--deselected);
-    width: fit-content; 
+    width: 180px; 
   }
 
   div#copies-input * {
+    font-size: 16px;
+    font-weight: bold;
     height: 24px;
     border-radius: 8px;
     padding: 5px 5px;
@@ -220,6 +240,7 @@
     scale: 1;
     margin: 0px;
     transition: all 0.1s ease-in-out;
+    translate: 0px;
   }
 
   div#copies-input button:hover {
@@ -228,7 +249,8 @@
 
   div#copies-input button:active {
     background-color: var(--purple);
-    margin: 0px 2px;
+    translate: 1.75px 0px;
+    margin: 0px 3.4px;
     filter: drop-shadow(0px 0px 6px var(--purple));
     border: 0px solid transparent;
     scale: 1.1;
@@ -390,6 +412,17 @@
 
 <section id="hidden-rs" style="display: none;">
   <h1>RotSymm</h1>
+  <svg width="18" height="29" viewBox="0 0 18 29" fill="none" xmlns="http://www.w3.org/2000/svg"> <!-- rotsymm logo dots -->
+    <g opacity="0.5">
+    <circle cx="2.2" cy="4.3499" r="1.7" fill="white"/>
+    <circle cx="8.9998" cy="1.95" r="1.7" fill="white"/>
+    <circle cx="15.7996" cy="4.3499" r="1.7" fill="white"/>
+    <circle cx="1.7" cy="1.7" r="1.7" transform="matrix(1 0 0 -1 0.5 25.6499)" fill="white"/>
+    <circle cx="1.7" cy="1.7" r="1.7" transform="matrix(1 0 0 -1 7.2998 28.0498)" fill="white"/>
+    <circle cx="1.7" cy="1.7" r="1.7" transform="matrix(1 0 0 -1 14.0996 25.6499)" fill="white"/>
+    </g>
+    </svg>
+    
 
   <h3>Objects Being Rotated:</h3>
   <div class="tool-objs">
@@ -421,7 +454,7 @@
     <div id="origin-rs" class="origin">
       <span>Symm. Origin:</span>
       <div class="tool-obj">
-        <p style="display: inline;">No object selected</p> <!-- changes based on selected object --> 
+        <p>No object selected</p> <!-- changes based on selected object --> 
       </div>
     </div>
 
@@ -430,8 +463,6 @@
       <input id="mirror-obj-rs" type="checkbox">
       <!-- <p class="empty-disclaimer">(will function the same as a regular object, but has axes for easier measurement and is deleted immediately after mirroring!)</span> -->
     </div>
-    
-    
   </div>
 
   <div class="button">
@@ -500,21 +531,23 @@
   const tabMM = document.getElementById('tab-mm')
   const tabRS = document.getElementById('tab-rs')
 
-  let numCopies;
-  let newVal;
 
   document.getElementById('minus').onclick = () => {
-    numCopies = document.getElementById('num-copies');
-    newVal = parseInt(numCopies.value) - 1;
+    let numCopies = document.getElementById('num-copies');
+    let newVal = parseInt(numCopies.value) - 1;
+    console.log(newVal)
     if (newVal > 1) {
       numCopies.setAttribute('value', newVal);
     }
+    console.log(numCopies.value)
   };
 
   document.getElementById('plus').onclick = () => {
-    numCopies = document.getElementById('num-copies');
-    newVal = parseInt(numCopies.value) + 1;
+    let numCopies = document.getElementById('num-copies');
+    let newVal = parseInt(numCopies.value) + 1;
+    console.log(newVal)
     numCopies.setAttribute('value', newVal);
+    console.log(numCopies.value)
   };
 
   tabMM.addEventListener('click', function() { // allows for the MirrorMult button to take user to the MirrorMult Menu, with its specific inputs
