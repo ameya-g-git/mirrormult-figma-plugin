@@ -250,10 +250,8 @@
 
   div#copies-input button:active {
     background-color: var(--purple);
-    translate: 1.75px 0px;
-    margin: 0px 3.4px;
     filter: drop-shadow(0px 0px 6px var(--purple));
-    border: 0px solid transparent;
+    border-color: var(--purple);
     scale: 1.1;
   }
 
@@ -296,7 +294,7 @@
     border-radius: 8px;
     padding: 6.5px 4px;
     /* translate: 0px -8px; */
-    opacity: 0.75;
+    opacity: 1;
     cursor: pointer;
     filter: none;
     scale: 1;
@@ -314,10 +312,8 @@
   .checkbox-container svg.active, .checkbox-container svg:active {
     opacity: 1;
     background-color: var(--purple);
-    border: 0px;
-    filter: drop-shadow(0px 0px 6px var(--purple));
-    margin: 0px 4px;
-
+    border-color: var(--purple);
+    filter: drop-shadow(0px 0px 3px var(--purple));
   }
 
   .checkbox-container>span {
@@ -328,6 +324,12 @@
   .lower-section >.origin {
     border-right: 2px dashed rgba(255, 255, 255, 0.5);
     stroke-linecap: round;
+  }
+
+  .origin>.tool-obj {
+    width: 100px;
+    padding: 0px;
+    margin-right: 12px;
   }
 
   .lower-section div>span, .lower-section div>label {
