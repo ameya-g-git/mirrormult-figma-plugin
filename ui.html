@@ -313,7 +313,8 @@
     opacity: 1;
     background-color: var(--purple);
     border-color: var(--purple);
-    filter: drop-shadow(0px 0px 3px var(--purple));
+    filter: brightness(1.2);
+    box-shadow: 0px 0px 8px var(--purple);
   }
 
   .checkbox-container>span {
@@ -344,7 +345,7 @@
     border: 2px solid var(--deselected);
     margin-left: 10px;
     scale: 1.5;
-    border-radius: 800px;
+    border-radius: 8px;
   }
 
   .button {
@@ -667,6 +668,10 @@
 
     checkboxRS.checked = false;
 
+    for (let check of document.querySelectorAll('.checkbox-container svg')) { 
+        check.classList.remove('active')
+    }
+
     tabMM.classList.add('active') // for the css
     tabRS.classList.remove('active')
 
@@ -681,6 +686,10 @@
     sectionMM.style.display = 'none';
 
     checkboxMM.checked = false;
+
+    for (let check of document.querySelectorAll('.checkbox-container svg')) { 
+        check.classList.remove('active')
+    }
     
     tabRS.classList.add('active') // for the css
     tabMM.classList.remove('active')
