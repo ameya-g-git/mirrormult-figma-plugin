@@ -276,7 +276,7 @@
     gap: 6px;
     align-items: flex-start;
     width: 97%;
-    margin-top: 8px;
+    margin-top: 4px;
   }
 
   .origin>.tool-obj {
@@ -347,6 +347,38 @@
     border-radius: 800px;
   }
 
+  .button {
+    width: fit-content;
+    border: 3px solid var(--deselected);
+    border-radius: 16px;
+    width: 95%;
+    margin: 12px auto;
+    cursor: pointer;
+  }
+
+  .button>label {
+    display: flex;
+    align-items: center;
+    margin: auto auto;
+  }
+
+  .button>button {
+    width: 94%;
+    height: 36px;
+    font-size: 18px;
+    font-weight: bold;
+    filter: none;
+    fill: transparent;
+    background-image: linear-gradient(0.25turn, #ff3fbfbb,#FFB800bb,#C60BFFbb);
+    border-radius: 12px;
+    border: 5px solid var(--bg);
+    margin: auto;
+    transition: all 0.1s ease-in-out;
+  }
+
+  .button>button:hover {
+    filter: brightness(1.2);
+  }
 </style>
 
 <!-- HTML -->
@@ -503,7 +535,7 @@
           <path d="M14 0.5H1C0.447715 0.5 0 0.947715 0 1.5V4.5C0 5.05228 0.447715 5.5 1 5.5H14C14.5523 5.5 15 5.05228 15 4.5V1.5C15 0.947715 14.5523 0.5 14 0.5Z" fill="white"/>
         </svg>          
       </button>
-      <input type="number" inputmode="numeric" id="num-copies" min="2" step="1" value="2">
+      <input type="text" inputmode="numeric" id="num-copies" min="2" step="1" value="2">
       <button class="input" id="plus">
         <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg"> <!-- PLUS SIGN-->
           <path d="M9 0.5H6C5.44772 0.5 5 0.947715 5 1.5V5.5L1 5.5C0.447715 5.5 0 5.94771 0 6.5V9.5C0 10.0523 0.447715 10.5 1 10.5L5 10.5V14.5C5 15.0523 5.44772 15.5 6 15.5H9C9.55229 15.5 10 15.0523 10 14.5V10.5H14C14.5523 10.5 15 10.0523 15 9.5V6.5C15 5.94772 14.5523 5.5 14 5.5H10V1.5C10 0.947715 9.55229 0.5 9 0.5Z" fill="white"/>
