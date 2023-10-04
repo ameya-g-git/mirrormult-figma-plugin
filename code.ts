@@ -44,7 +44,12 @@ function getSelectedObjName() {
   if (selection.length > 1) {
     return "Too many objects selected!";
   } else if (selection.length === 1) {
-    return (selection[0].name.slice(0,9) + '...'); // selection is a list, so we need this notation to get the name of the selected obj
+    if (selection[0].name.length > 8) {
+      return (selection[0].name.slice(0,9) + '...'); // selection is a list, so we need this notation to get the name of the selected obj
+    }
+    else {
+      return (selection[0].name)
+    }
   }
   return "Nothing yet!";
 }

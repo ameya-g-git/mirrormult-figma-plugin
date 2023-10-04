@@ -294,7 +294,7 @@
     border-radius: 8px;
     padding: 6.5px 4px;
     /* translate: 0px -8px; */
-    opacity: 1;
+    opacity: 0.5;
     cursor: pointer;
     filter: none;
     scale: 1;
@@ -602,22 +602,30 @@
   const tabMM = document.getElementById('tab-mm')
   const tabRS = document.getElementById('tab-rs')
 
+  let numCopies = document.getElementById('num-copies');
+
+  numCopies.addEventListener('blur', () => {
+    let currentVal = parseInt(numCopies.value);
+
+    if (isNaN(numCopies.value) || numCopies.value < 2) {
+      numCopies.value = 2;
+    }
+    console.log(numCopies.value)
+  })
 
   document.getElementById('minus').onclick = () => {
-    let numCopies = document.getElementById('num-copies');
     let newVal = parseInt(numCopies.value) - 1;
     console.log(newVal)
     if (newVal > 1) {
-      numCopies.setAttribute('value', newVal);
+      numCopies.value = newVal;
     }
     console.log(numCopies.value)
   };
 
   document.getElementById('plus').onclick = () => {
-    let numCopies = document.getElementById('num-copies');
     let newVal = parseInt(numCopies.value) + 1;
     console.log(newVal)
-    numCopies.setAttribute('value', newVal);
+    numCopies.value = newVal;
     console.log(numCopies.value)
   };
 
