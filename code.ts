@@ -21,6 +21,7 @@ function properParent(obj) {
   }
 }
 
+
 let goodParent = properParent(toolObjs[0]); // will hold the parent that all objects created via the plugin will be placed into
 
 console.log(goodParent)
