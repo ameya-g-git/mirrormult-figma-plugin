@@ -41,17 +41,18 @@ function getSelectedObjName() {
   // returns different messages depending on how many objs are selected
   const selection = figma.currentPage.selection;
 
-  if (selection.length > 1) {
+  if (selection.length > 12) {
     return "Too many objects selected!";
-  } else if (selection.length === 1) {
-    if (selection[0].name.length > 8) {
+  } 
+  else if (selection.length === 1) {
+    if (selection[0].name.length > 15) {
       return (selection[0].name.slice(0,9) + '...'); // selection is a list, so we need this notation to get the name of the selected obj
     }
     else {
       return (selection[0].name)
     }
   }
-  return "Nothing yet!";
+  return "🫥 No object!";
 }
 
 figma.on("selectionchange", () => {

@@ -3,7 +3,7 @@
   :root {
     --pink: #FF3FBE;
     --yellow: #FFB800;
-    --purple: #C60BFF;
+    --purple: #AF0BFF;
     --bg: #242325;
     --bg-dark: #1F1F21;
     --chip-stroke: #474549;
@@ -67,14 +67,7 @@
 
 /* MAKES IT EASY TO SEE HOW ELEMENTS ARE NESTED, UNCOMMENT IF NEEDED */
 
-/* * { outline: 2px dotted red }
-* * { outline: 2px dotted green }
-* * * { outline: 2px dotted orange; }
-* * * * { outline: 2px dotted blue }
-* * * * * { outline: 1px solid red }
-* * * * * * { outline: 1px solid green }
-* * * * * * * { outline: 1px solid orange }
-* * * * * * * * { outline: 1px solid blue } */
+
 
  
   /* UPPER UI - THE STUFF THAT STAYS ON SCREEN AT ALL TIME*/
@@ -165,7 +158,8 @@
   /* toolobj chips */
 
   div.tool-obj {
-    font-size: 14px;
+    font-size: 13px;
+    height: fit;
     display: inline-block;
     width: fit-content;
     border-radius: 12px;
@@ -211,14 +205,14 @@
 
   div#copies-input {
     display: inline-flex;
-    height: 44px;
+    height: fit-content;
     gap: 4px;
     align-items: flex-start;
     justify-content: flex-start;
     margin: 8px 0px;
-    padding: 4px;
-    padding-bottom: 0px;
-    border-radius: 12px;
+    margin-left: 9px;
+    padding: 4.5px 6px;
+    border-radius: 16px;
     border: 3px solid var(--deselected);
     width: 180px; 
   }
@@ -226,7 +220,7 @@
   div#copies-input * {
     font-size: 16px;
     font-weight: bold;
-    height: 24px;
+    height: 22px;
     border-radius: 8px;
     padding: 5px 5px;
     border: 2px solid var(--deselected);
@@ -269,6 +263,81 @@
     appearance: textfield;
   }
 
+  * { outline: 2px dotted red }
+* * { outline: 2px dotted green }
+* * * { outline: 2px dotted orange; }
+* * * * { outline: 2px dotted blue }
+* * * * * { outline: 1px solid red }
+* * * * * * { outline: 1px solid green }
+* * * * * * * { outline: 1px solid orange }
+* * * * * * * * { outline: 1px solid blue }
+
+  #direction {
+    margin: 8px auto;
+    display: flex;
+    align-items: flex-start;
+    font-size: 16px;
+    font-weight: bold;
+    width: 92%;
+    height: fit-content;
+    border: 3px solid var(--deselected);
+    border-radius: 16px;
+    padding: 4px;
+    justify-content: center;
+  }
+
+  #direction div {
+    height: fit-content;
+  }
+
+  #direction>label {
+    translate: -1.5px 0px;
+    background-color: var(--deselected);
+    border-radius: 8px;
+    width: 100%;
+    height: fit-content;
+    margin: 0px;
+    opacity: 0.5;
+    scale: 1;
+    box-shadow: none;
+    transition: all 0.1s ease-in-out;
+    /* FIGURE OUT HOW TO MAKE THE TEXT UNHIGHLIGHTABLE */
+  }
+
+  #direction>label>div {
+    display: flex;
+    gap: 18px;
+    padding: 8px 9px;
+    justify-content: center;
+  }
+
+  #direction>label:hover, #direction>label>div {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  #direction>label:active, #direction>label.active {
+    scale: 1;
+    opacity: 1;
+    background-color: var(--purple);
+    box-shadow: 0px 0px 6px var(--purple);
+    z-index: 10;
+  }
+
+  #direction>label:active {
+    scale: 1.05
+  }
+
+  #direction #hori-check>svg {
+    height: 19px;
+  }
+
+  #direction input {
+    appearance: none;
+    width: 0px;
+    height: 0px;
+  }
+
   /* MISC. */
 
   .lower-section {
@@ -281,11 +350,15 @@
 
   .origin>.tool-obj {
     margin: 0px 16px 0px 0px;
+    /* padding: 4px; */
+    height: fit-content;
   }
+
 
   .checkbox-container {
     display: flex !important;
     align-items: flex-start;
+    opacity: 1 !important;
   }
 
   .checkbox-container svg {
@@ -293,7 +366,6 @@
     border: 2px solid var(--deselected);
     border-radius: 8px;
     padding: 6.5px 4px;
-    /* translate: 0px -8px; */
     opacity: 0.5;
     cursor: pointer;
     filter: none;
@@ -302,7 +374,7 @@
   }
 
   .checkbox-container svg:hover {
-    opacity: 1;
+    opacity: 1 !important;
   }
 
   .checkbox-container svg:active {
@@ -310,10 +382,10 @@
   }
 
   .checkbox-container svg.active, .checkbox-container svg:active {
-    opacity: 1;
     background-color: var(--purple);
     border-color: var(--purple);
-    filter: brightness(1.2);
+    opacity: 1;
+    filter: brightness(1.5);
     box-shadow: 0px 0px 8px var(--purple);
   }
 
@@ -457,26 +529,35 @@
 
   <hr>
   
+  <h3>Mirror Direction</h3>
+
   <div id="direction">
-    <h3>Mirror Direction</h3>
     <input type="checkbox" id="hori" value="1" name="mirrorDir">
-    <svg width="12" height="12">
-      <!-- put svg for arrow thing here -->
-    </svg>    
-    <label for="hori">Horizontal</label>
+    <label for="hori">
+    <div id="hori-check">
+      <svg width="19" height="8" viewBox="0 0 19 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.75 4L1.75 4M17.75 4L13.8033 1M17.75 4L13.8033 7M1.75 4L5.69667 7M1.75 4L5.69667 0.999999" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Horizontal         
+    </div>
+    </label>
     
     <input type="checkbox" id="vert" value="2" name="mirrorDir">
-    <svg width="12" height="12">
-      <!-- put svg for arrow thing here -->
-    </svg>    
-    <label for="vert">Vertical</label>
+    <label for="vert">
+    <div id="vert-check">
+      <svg width="9" height="18" viewBox="0 0 9 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4.25 1V17M4.25 1L1.25 4.94667M4.25 1L7.25 4.94667M4.25 17L7.25 13.0533M4.25 17L1.25 13.0533" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Vertical
+    </div>
+    </label>
   </div>
 
   <div class="lower-section">
     <div id="origin-mm" class="origin">
       <span>Mirror Object:</span>
       <div class="tool-obj">
-        <p>Nothing yet!</p> <!-- changes based on selected object --> 
+        <p>🫥 No shape</p> <!-- changes based on selected object --> 
       </div> 
     </div>
 
@@ -527,9 +608,10 @@
   </div>
 
   <hr>
+
+  <h3>Number of Copies:</h3>
   
-  <div id="copies">
-    <h3>Number of Copies:</h3>
+  
     <div id="copies-input">
       <button class="input" id="minus">
         <svg width="15" height="6" viewBox="0 0 15 6" fill="none" xmlns="http://www.w3.org/2000/svg"> <!-- MINUS SIGN-->
@@ -543,7 +625,7 @@
         </svg>          
       </button>
     </div>
-  </div>  
+  
 
   <div class="lower-section">
     <div id="origin-rs" class="origin">
@@ -576,8 +658,6 @@
 
 <!-- JS -->
 <script>
-  window.resizeTo(400, 500)
-
   let toolObjs;
 
   window.onmessage = event => { // listens for change in selected object to update respective element
@@ -632,8 +712,10 @@
   const sectionMM = document.getElementById("hidden-mm");
   const sectionRS = document.getElementById("hidden-rs");
 
-  const tabMM = document.getElementById('tab-mm')
-  const tabRS = document.getElementById('tab-rs')
+  const tabMM = document.getElementById('tab-mm');
+  const tabRS = document.getElementById('tab-rs');
+
+
 
   let numCopies = document.getElementById('num-copies');
 
@@ -661,6 +743,28 @@
     numCopies.value = newVal;
     console.log(numCopies.value)
   };
+
+  
+  document.querySelector('[for="hori"]').onclick = () => {
+    let horiCheck = document.getElementById('hori').checked;
+    console.log(horiCheck)
+    if (horiCheck === false) {
+      document.querySelector('[for="hori"]').classList.add('active')
+    }
+    else {
+      document.querySelector('[for="hori"]').classList.remove('active')
+    }
+  }
+
+  document.querySelector('[for="vert"]').onclick = () => {
+    let vertCheck = document.getElementById('vert').checked;
+    if (vertCheck === false) {
+      document.querySelector('[for="vert"]').classList.add('active')
+    }
+    else {
+      document.querySelector('[for="vert"]').classList.remove('active')
+    }
+  }
 
   tabMM.addEventListener('click', function() { // allows for the MirrorMult button to take user to the MirrorMult Menu, with its specific inputs
     sectionMM.style.display = 'block';
