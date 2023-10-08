@@ -8,4 +8,16 @@ ___
 
 2. Stay on MirrorMult for axis symmetry (horizontal & vertical), or click on the RotSymm tab for rotational symmetry.
 
+3. From there, it should be intuitive to do what you want to do. Select which axes to mirror across, or change how many copies you want for the rotational symmetry.
+
+4. As for the origin of the symmetry, you have two options:
+    
+    a. Select another object, its center will act as the origin. The name of the object will appear near the bottom left.
+    
+    b. Check the "Use Empty Object" checkbox, which creates a cursor akin to Blender's 3D cursor that makes seeing center points and position much easier.
+
+5. Once everything's done, just hit the button at the bottom and you've got your symmetrized graphic! 
+
 ## **Known Issues**
+* Will not work on component objects, as the whole functionality of adaptive symmetry comes from using components
+* If the objects being mirrored don't all have the same parent, issues are known to happen.
