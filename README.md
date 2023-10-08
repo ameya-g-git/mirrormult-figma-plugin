@@ -21,3 +21,4 @@ ___
 ## **Known Issues**
 * Will not work on component objects, as the whole functionality of adaptive symmetry comes from using components
 * If the objects being mirrored don't all have the same parent, issues are known to happen.
+* Likewise, when using the cursor object, it should have the same parent as all the objects you're mirroring, otherwise issues will occur.
