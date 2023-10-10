@@ -189,10 +189,6 @@
 
   }
 
-  ::-webkit-scrollbar-thumb :hover {
-    background-color: red;
-  }
-
   div.tool-obj p {
     margin: 8px !important;
   }
@@ -333,7 +329,7 @@
   }
 
   #direction input {
-    appearance: none;
+    /* appearance: none; */
     width: 0px;
     height: 0px;
   }
@@ -412,7 +408,7 @@
   }
 
   .lower-section div input {
-    display: none;
+    display: block; /* THIS IS WHERE THE INVISIBLE CHECKBOX FOR EMPTY OBJ LIES */
     position: relative;
     border: 2px solid var(--deselected);
     margin-left: 10px;
@@ -746,9 +742,8 @@
 
   
   document.querySelector('[for="hori"]').onclick = () => {
-    let horiCheck = document.getElementById('hori').checked;
-    console.log(horiCheck)
-    if (horiCheck === false) {
+    let hori = document.getElementById('hori');
+    if (!hori.checked) {
       document.querySelector('[for="hori"]').classList.add('active')
     }
     else {
@@ -757,8 +752,8 @@
   }
 
   document.querySelector('[for="vert"]').onclick = () => {
-    let vertCheck = document.getElementById('vert').checked;
-    if (vertCheck === false) {
+    let vert = document.getElementById('vert');
+    if (!vert.checked) {
       document.querySelector('[for="vert"]').classList.add('active')
     }
     else {
@@ -770,71 +765,95 @@
     sectionMM.style.display = 'block';
     sectionRS.style.display = 'none';
 
-    checkboxRS.checked = false;
+    // checkboxRS.checked = false;
 
-    for (let check of document.querySelectorAll('.checkbox-container svg')) { 
-        check.classList.remove('active')
-    }
+    // for (let check of document.querySelectorAll('.checkbox-container svg')) { 
+    //     check.classList.remove('active')
+    // }
 
     tabMM.classList.add('active') // for the css
     tabRS.classList.remove('active')
 
     r.style.setProperty('--grad', 'linear-gradient(0.25turn, var(--pink), var(--purple) 10%, var(--yellow) 20%)');
 
-    msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
-    parent.postMessage({pluginMessage: {msgFor}}, '*');
+    // msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
+    // parent.postMessage({pluginMessage: {msgFor}}, '*');
   });
 
   tabRS.addEventListener('click', function() { // allows for the RotSymm button to take user to the Rotsymm Menu, with its specific inputs
     sectionRS.style.display = 'block';
     sectionMM.style.display = 'none';
 
-    checkboxMM.checked = false;
+    // checkboxMM.checked = false;
 
-    for (let check of document.querySelectorAll('.checkbox-container svg')) { 
-        check.classList.remove('active')
-    }
+    // for (let check of document.querySelectorAll('.checkbox-container svg')) { 
+    //     check.classList.remove('active')
+    // }
     
     tabRS.classList.add('active') // for the css
     tabMM.classList.remove('active')
 
     r.style.setProperty('--grad', 'linear-gradient(0.25turn, var(--pink) 30%, var(--purple) 40%, var(--yellow) 50%)');
 
-    msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
-    parent.postMessage({pluginMessage: {msgFor}}, '*');
+    // msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
+    // parent.postMessage({pluginMessage: {msgFor}}, '*');
   });
 
   // checkbox shenanigans
   
-  checkboxMM.addEventListener('change', function() {
+  checkboxMM.addEventListener('click', function() {
     if (this.checked) {
       for (let check of document.querySelectorAll('.checkbox-container svg')) { // as im using a custom checkbox, i give the svg a class of "active" so that it stays a certain way when the checkbox is checked
         check.classList.add('active')
       }
+
+      for (let check of document.querySelectorAll('.mirror-obj>[type="checkbox"]')) {
+        check.checked = true;
+      }
+
       msgFor = 1; // lets code.ts know that the message is for the Empty Object checkbox
       parent.postMessage({pluginMessage: {msgFor}}, '*');
     }
     else {
       for (let check of document.querySelectorAll('.checkbox-container svg')) {
         check.classList.remove('active')
+        check.checked = false;
       }
+
+      for (let check of document.querySelectorAll('.mirror-obj>[type="checkbox"]')) {
+        check.checked = false;
+      }
+
       msgFor = 2;
       parent.postMessage({pluginMessage: {msgFor}}, '*');
     };
   });
 
-  checkboxRS.addEventListener('change', function() {
+  checkboxRS.addEventListener('click', function() {
     if (this.checked) {
       for (let check of document.querySelectorAll('.checkbox-container svg')) {
         check.classList.add('active')
+        check.checked = true;
       }
+
+      for (let check of document.querySelectorAll('.mirror-obj>[type="checkbox"]')) {
+        check.checked = true;
+      }
+
       msgFor = 1;  // lets code.ts know that the message is for the Empty Object checkbox
       parent.postMessage({pluginMessage: {msgFor}}, '*');
     }
     else {
       for (let check of document.querySelectorAll('.checkbox-container svg')) { 
         check.classList.remove('active')
+        check.checked = false;
       }
+
+      for (let check of document.querySelectorAll('.mirror-obj>[type="checkbox"]')) {
+        check.checked = false;
+      }
+      
+      
       msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
       parent.postMessage({pluginMessage: {msgFor}}, '*');
     };
