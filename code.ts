@@ -8,26 +8,25 @@ let tempToolObjs = toolObjs; // holds toolObjs in a temp list to be used for par
 
 function properParent(obj) {
   let objParent = obj.parent;
-  console.log(objParent);
+  console.log(objParent, 'looking')
 
   if (
     objParent.type === "FRAME" ||
     objParent.type === "PAGE" ||
     objParent.type === "SECTION"
   ) {
+    console.log('found', objParent)
     return objParent;
   } else {
-    objParent = properParent(objParent); // will keep going up hierarchies until either a page or a frame is reached
+    return(properParent(objParent)); // will keep going up hierarchies until either a page or a frame is reached
   }
 }
 
-
 let goodParent = properParent(toolObjs[0]); // will hold the parent that all objects created via the plugin will be placed into
 
-console.log(goodParent)
+console.log(goodParent, 'goold')
 
 const toolObjNames = toolObjs.map((obj) => obj.name); // maps items from a defined list and allows you to create a new list by taking properties of each item from that predefined list, woa!!!
-console.log(toolObjNames);
 figma.ui.postMessage({ toolObjNames });
 
 let cursorPosition = []; // see if this works lol

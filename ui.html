@@ -63,12 +63,6 @@
   section * * {
     margin-left: 0px !important;
   }
-
-
-/* MAKES IT EASY TO SEE HOW ELEMENTS ARE NESTED, UNCOMMENT IF NEEDED */
-
-
-
  
   /* UPPER UI - THE STUFF THAT STAYS ON SCREEN AT ALL TIME*/
   
@@ -329,7 +323,7 @@
   }
 
   #direction input {
-    /* appearance: none; */
+    appearance: none;
     width: 0px;
     height: 0px;
   }
@@ -743,7 +737,7 @@
   
   document.querySelector('[for="hori"]').onclick = () => {
     let hori = document.getElementById('hori');
-    if (!hori.checked) {
+    if (!(hori.checked)) {
       document.querySelector('[for="hori"]').classList.add('active')
     }
     else {
@@ -753,7 +747,7 @@
 
   document.querySelector('[for="vert"]').onclick = () => {
     let vert = document.getElementById('vert');
-    if (!vert.checked) {
+    if (!(vert.checked)) {
       document.querySelector('[for="vert"]').classList.add('active')
     }
     else {
@@ -864,6 +858,8 @@
   document.getElementById('submit-mm').onclick = () => { // posts MirrorMult message
     const mirrorHori = document.getElementById('hori').checked; // holds either true or false depending if the option was selected
     const mirrorVert = document.getElementById('vert').checked; // holds either true or false depending if the option was selected
+
+    console.log(mirrorHori, mirrorVert)
 
     msgFor = 3;
 
