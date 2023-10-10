@@ -343,12 +343,15 @@ figma.ui.onmessage = async (pluginMessage) => {
         }
 
         figma.currentPage.selection = [mmGroup];
-
-        ogParent.appendChild(mmGroup)
+        
+        if (ogParent != mmGroup.parent) {
+          ogParent.appendChild(mmGroup)
+        }
 
         figma.closePlugin('🪞 Objects successfully mirrored!')
       }
-      else if (msgFor === 4) {
+    }
+    else if (msgFor === 4) {
         // rotsymm functionality
         let compBottom = compGroup.y + compGroup.height;
         let compRight = compGroup.x + compGroup.width;
@@ -432,13 +435,14 @@ figma.ui.onmessage = async (pluginMessage) => {
 
         figma.currentPage.selection = [rsGroup];
 
-        ogParent.appendChild(rsGroup)
+        if (ogParent != rsGroup.parent) {
+          ogParent.appendChild(rsGroup);
+        }
 
         figma.closePlugin('🔅 Objects successfully rotated!')
-      }
     }
   }
-};
+}
 
 figma.on("close", () => {
   const cursors = figma.root.findAll(
