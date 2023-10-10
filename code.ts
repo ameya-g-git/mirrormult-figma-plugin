@@ -242,6 +242,7 @@ figma.ui.onmessage = async (pluginMessage) => {
     let compGroup;
     let objInst;
     let origin;
+    const ogParent = toolObjs[0].parent
 
     // mirrormult specific variables
 
@@ -343,92 +344,98 @@ figma.ui.onmessage = async (pluginMessage) => {
 
         figma.currentPage.selection = [mmGroup];
 
+        ogParent.appendChild(mmGroup)
+
         figma.closePlugin('🪞 Objects successfully mirrored!')
       }
-    } else if (msgFor === 4) {
-      // rotsymm functionality
-      let compBottom = compGroup.y + compGroup.height;
-      let compRight = compGroup.x + compGroup.width;
-      const numCopies = pluginMessage.numCopies;
+      else if (msgFor === 4) {
+        // rotsymm functionality
+        let compBottom = compGroup.y + compGroup.height;
+        let compRight = compGroup.x + compGroup.width;
+        const numCopies = pluginMessage.numCopies;
 
-      const oldCompX = compGroup.x;
-      const oldCompY = compGroup.y;
+        const oldCompX = compGroup.x;
+        const oldCompY = compGroup.y;
 
-      let objPosition = TLtoC(compGroup);
+        let objPosition = TLtoC(compGroup);
 
-      let xDiff = objPosition[0] - originPosition[0];
-      let yDiff = objPosition[1] - originPosition[1];
+        let xDiff = objPosition[0] - originPosition[0];
+        let yDiff = objPosition[1] - originPosition[1];
 
-      let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
-      let angle = Math.acos(xDiff / radius); // returns the angle that the object makes with the origin as per the unit circle
+        let radius = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+        let angle = Math.acos(xDiff / radius); // returns the angle that the object makes with the origin as per the unit circle
 
-      if (Math.round(originPosition[1]) <= Math.round(compGroup.y)) {
-        // angle measured is always between 0 - PI, despite that not being the case all the time. to fix this, i just check for if the cursor is above the compGroup
-        angle = -angle;
-      }
-
-      rotateList.push(compGroup);
-
-      const rotationAngle = (2 * Math.PI) / numCopies;
-      const rotationAngleDeg = (rotationAngle * 180) / Math.PI;
-
-      if (originPosition[1] > compGroup.y && originPosition[1] < compBottom) {
-        if (originPosition[0] > Math.round(compRight)) {
-          compGroup.y -= radius / 2;
-          compGroup.children[0].y += radius / 2;
-        } else {
-          compGroup.y -= radius;
-          compGroup.children[0].y += radius;
+        if (Math.round(originPosition[1]) <= Math.round(compGroup.y)) {
+          // angle measured is always between 0 - PI, despite that not being the case all the time. to fix this, i just check for if the cursor is above the compGroup
+          angle = -angle;
         }
+
+        rotateList.push(compGroup);
+
+        const rotationAngle = (2 * Math.PI) / numCopies;
+        const rotationAngleDeg = (rotationAngle * 180) / Math.PI;
+
+        if (originPosition[1] > compGroup.y && originPosition[1] < compBottom) {
+          if (originPosition[0] > Math.round(compRight)) {
+            compGroup.y -= radius / 2;
+            compGroup.children[0].y += radius / 2;
+          } else {
+            compGroup.y -= radius;
+            compGroup.children[0].y += radius;
+          }
+        }
+
+        for (let i = 1; i < numCopies; i++) {
+          angle += rotationAngle; // will hold the angle that the instance will be at on the unit circle
+          let objAngle = -rotationAngle * i;
+          let objAngleDeg = Math.round(rotationAngleDeg * i); // for naming the respective components
+
+          objInst = compGroup.createInstance();
+
+          console.log(originPosition);
+
+          objInst.x = originPosition[0] + cos(angle) * radius; // cursor position is the base position, x position varies based on unit circle (sin is vertical, cos is horizontal)
+          objInst.y = originPosition[1] - sin(angle) * radius;
+
+          console.log(objInst.x, objInst.y);
+
+          objInst.name = "Rotation " + objAngleDeg + "°";
+
+          let cosAngle = cos(objAngle); // so the computer doesnt have to calculate it over and over :D
+          let sinAngle = sin(objAngle);
+
+          objInst.relativeTransform = [
+            [cosAngle, -sinAngle, objInst.x],
+            [sinAngle, cosAngle, objInst.y],
+          ];
+
+          let objInstPosition = TLtoC(objInst);
+          let objBoxPosition = TLtoC(objInst.absoluteBoundingBox); // holds the bounding box's position from its center
+
+          objInst.x += objInstPosition[0] - objBoxPosition[0] - objInst.width / 2;
+          objInst.y += objInstPosition[1] - objBoxPosition[1] - objInst.height / 2;
+
+          rotateList.push(objInst);
+        }
+
+        rsGroup = figma.group(rotateList, figma.currentPage);
+        goodParent.appendChild(rsGroup);
+
+        compGroup.x = oldCompX;
+        compGroup.y = oldCompY;
+
+        rsGroup.name = "🔅 ";
+
+        for (let obj of toolObjNames) {
+          rsGroup.name += obj + ", ";
+        }
+
+        figma.currentPage.selection = [rsGroup];
+
+        ogParent.appendChild(rsGroup)
+
+        figma.closePlugin('🔅 Objects successfully rotated!')
       }
-
-      for (let i = 1; i < numCopies; i++) {
-        angle += rotationAngle; // will hold the angle that the instance will be at on the unit circle
-        let objAngle = -rotationAngle * i;
-        let objAngleDeg = Math.round(rotationAngleDeg * i); // for naming the respective components
-
-        objInst = compGroup.createInstance();
-
-        console.log(originPosition);
-
-        objInst.x = originPosition[0] + cos(angle) * radius; // cursor position is the base position, x position varies based on unit circle (sin is vertical, cos is horizontal)
-        objInst.y = originPosition[1] - sin(angle) * radius;
-
-        console.log(objInst.x, objInst.y);
-
-        objInst.name = "Rotation " + objAngleDeg + "°";
-
-        let cosAngle = cos(objAngle); // so the computer doesnt have to calculate it over and over :D
-        let sinAngle = sin(objAngle);
-
-        objInst.relativeTransform = [
-          [cosAngle, -sinAngle, objInst.x],
-          [sinAngle, cosAngle, objInst.y],
-        ];
-
-        let objInstPosition = TLtoC(objInst);
-        let objBoxPosition = TLtoC(objInst.absoluteBoundingBox); // holds the bounding box's position from its center
-
-        objInst.x += objInstPosition[0] - objBoxPosition[0] - objInst.width / 2;
-        objInst.y += objInstPosition[1] - objBoxPosition[1] - objInst.height / 2;
-
-        rotateList.push(objInst);
-      }
-
-      rsGroup = figma.group(rotateList, figma.currentPage);
-      goodParent.appendChild(rsGroup);
-
-      compGroup.x = oldCompX;
-      compGroup.y = oldCompY;
-
-      rsGroup.name = "🔅 ";
-
-      for (let obj of toolObjNames) {
-        rsGroup.name += obj + ", ";
-      }
-
-      figma.currentPage.selection = [rsGroup];
-      figma.closePlugin('🔅 Objects successfully rotated!')
     }
   }
 };
