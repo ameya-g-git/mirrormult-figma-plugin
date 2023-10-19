@@ -22,7 +22,11 @@ function properParent(obj) {
   }
 }
 
-let goodParent = properParent(toolObjs[0]); // will hold the parent that all objects created via the plugin will be placed into
+let goodParent;
+
+if (toolObjs[0]) {
+  goodParent = properParent(toolObjs[0]); // will hold the parent that all objects created via the plugin will be placed into
+}
 
 console.log(goodParent, 'goold')
 
@@ -181,8 +185,12 @@ figma.ui.onmessage = async (pluginMessage) => {
     yellCircle.strokeCap = "ROUND";
     yellCircle.strokeAlign = "CENTER";
 
-    cursorGroup = figma.group([ring, yellCircle], goodParent); // initializes the group for the cursor's objects
-
+    if (goodParent) {
+      cursorGroup = figma.group([ring, yellCircle], goodParent); // initializes the group for the cursor's objects
+    }
+    else {
+      cursorGroup = figma.group([ring, yellCircle], figma.currentPage);
+    }
     // consider making a component of all the toolObjs so that you only need to move instances to their respective place, not each objects instances
     // i still need to change everything to relative coordinates
     // also i could just use the object from the option where you dont use the cursor to decide where the instances should go, should be easy enough

@@ -159,7 +159,8 @@
     border-radius: 12px;
     background-color: var(--bg-dark);
     outline: 2px solid var(--chip-stroke);
-    margin: 10px 16px 10px 4px;
+    margin: 8px;
+    margin-left: 0px;
   }
 
   div.tool-objs {
@@ -653,6 +654,8 @@
   window.onmessage = event => { // listens for change in selected object to update respective element
     const data = event.data.pluginMessage;
 
+    const submitButs = document.querySelectorAll('.button>button')
+
     const mirrorObjElem = document.querySelectorAll("div.origin p");
     const toolObjsDiv = document.querySelectorAll("div.tool-objs");
 
@@ -665,7 +668,7 @@
       }
 
       else {
-        obj.innerHTML = "Not selected yet!"
+        obj.innerHTML = "🫥 No object!"
       };
     };
 
@@ -680,7 +683,9 @@
         toolElem.innerHTML += toolObjsFormat.join('\n')
       }
       else {
-        toolElem.innerHTML += 'No objects selected, make sure to select the objects you want symmetrized before running the plugin!';
+        toolElem.innerHTML += (`<div class="tool-obj">
+                                  <p>No objects selected, select them before running the plugin!</p>
+                                </div>`)
       }
     }
   }
@@ -704,8 +709,6 @@
 
   const tabMM = document.getElementById('tab-mm');
   const tabRS = document.getElementById('tab-rs');
-
-
 
   let numCopies = document.getElementById('num-copies');
 
@@ -759,38 +762,20 @@
     sectionMM.style.display = 'block';
     sectionRS.style.display = 'none';
 
-    // checkboxRS.checked = false;
-
-    // for (let check of document.querySelectorAll('.checkbox-container svg')) { 
-    //     check.classList.remove('active')
-    // }
-
-    tabMM.classList.add('active') // for the css
-    tabRS.classList.remove('active')
+    tabMM.classList.add('active'); // for the css
+    tabRS.classList.remove('active');
 
     r.style.setProperty('--grad', 'linear-gradient(0.25turn, var(--pink), var(--purple) 10%, var(--yellow) 20%)');
-
-    // msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
-    // parent.postMessage({pluginMessage: {msgFor}}, '*');
   });
 
   tabRS.addEventListener('click', function() { // allows for the RotSymm button to take user to the Rotsymm Menu, with its specific inputs
     sectionRS.style.display = 'block';
     sectionMM.style.display = 'none';
-
-    // checkboxMM.checked = false;
-
-    // for (let check of document.querySelectorAll('.checkbox-container svg')) { 
-    //     check.classList.remove('active')
-    // }
     
     tabRS.classList.add('active') // for the css
     tabMM.classList.remove('active')
 
     r.style.setProperty('--grad', 'linear-gradient(0.25turn, var(--pink) 30%, var(--purple) 40%, var(--yellow) 50%)');
-
-    // msgFor = 2; // lets code.ts know to delete the cursor as the checkbox has been unchecked
-    // parent.postMessage({pluginMessage: {msgFor}}, '*');
   });
 
   // checkbox shenanigans
