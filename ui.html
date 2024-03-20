@@ -693,7 +693,9 @@
 
   // checkbox variables
 
-  let msgFor = 0;
+  let msgFor = 5;
+  parent.postMessage(msgFor)
+  msgFor = 0;
   let r = document.querySelector(':root');
 
   const checkboxMM = document.getElementById('mirror-obj-mm');

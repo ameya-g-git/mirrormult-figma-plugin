@@ -72,10 +72,6 @@ function TLtoC(obj) {
   return [obj.x + obj.width / 2, obj.y + obj.height / 2];
 }
 
-// function getRelCoords(obj) {
-//     return [obj.relativeTransform[0][2], obj.relativeTransform[1][2]];
-// }
-
 function rotateFromCenter(obj, angle) {
   return [
     [cos(angle), -sin(angle), obj.x], 
@@ -98,11 +94,6 @@ function componentify(obj) {
     [1, 0, 0],
     [0, 1, 0],
   ];
-
-  // objComp.relativeTransform = [
-  //     [cos(objAngle), -sin(objAngle), objComp.x],
-  //     [sin(objAngle), cos(objAngle), objComp.y]
-  // ];
 
   return objComp;
 }
@@ -128,7 +119,20 @@ function findCursor() {
   return cursor;
 }
 
-figma.ui.onmessage = async (pluginMessage) => {
+function killCursors() {
+  const cursors = figma.root.findAll(
+    (node) => node.type === "GROUP" && node.name === preferredName
+  ); // on the off chance someone has multiple cursors on screen accidentally
+  if (cursors) {
+    for (var cursorDup of cursors) {
+      cursorDup.remove();
+    }
+  }
+}
+
+// FIGURE OUT KILLING USELESS CURSORS 
+
+figma.ui.onmessage = async(pluginMessage) => {
   const msgFor = pluginMessage.msgFor; // allows for easy designation of which pluginMessage is received
 
   if (msgFor === 1) {
@@ -450,15 +454,10 @@ figma.ui.onmessage = async (pluginMessage) => {
         figma.closePlugin('🔅 Objects successfully rotated!')
     }
   }
+
+  else if (msgFor === 5) {
+    killCursors()
+  }
 }
 
-figma.on("close", () => {
-  const cursors = figma.root.findAll(
-    (node) => node.type === "GROUP" && node.name === preferredName
-  ); // on the off chance someone has multiple cursors on screen accidentally
-  if (cursors) {
-    for (var cursorDup of cursors) {
-      cursorDup.remove();
-    }
-  }
-});
+figma.on("close", () => killCursors());
